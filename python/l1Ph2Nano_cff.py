@@ -129,7 +129,7 @@ gtNNTauTable = cms.EDProducer(
     src = cms.InputTag('l1tGTProducer','CL2Taus'),
     cut = cms.string(""),
     name = cms.string("GTnnTaus"),
-    doc = cms.string("GT NNpuppi Taus"),
+    doc = cms.string("GT CL2Taus: NN puppi Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
@@ -137,13 +137,11 @@ gtNNTauTable = cms.EDProducer(
 )
 
 gtEtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "EventSingletonSimpleFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2EtSum'),
     name = cms.string("GTetSum"),
-    doc = cms.string("GT etSum"),
-    singleton = cms.bool(True), # the number of entries is variable
+    doc = cms.string("GT CL2EtSum"),
     variables = cms.PSet(
-        # l1GTObjVars,
         pt = Var("pt", int, doc="MET pt"),
         phi = Var("phi", int, doc="MET phi"),
     )
@@ -153,11 +151,12 @@ gtHtSumTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2HtSum'),
     name = cms.string("GThtSum"),
-    doc = cms.string("GT htSum"),
+    doc = cms.string("GT CL2HtSum; idx 0 is HT, idx 1 is MHT"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         # l1GTObjVars,
-        mht = Var("pt", int, doc="MHT"),
+        mht = Var("pt", int, doc="MHT pt"),
+        phi = Var("phi", int, doc="MHT phi"),
         #ht = Var("scasum", int, doc="HT"),
     )
 )
@@ -222,40 +221,10 @@ staEGTable = cms.EDProducer(
     doc = cms.string("standalone EG merged endcap and barrel"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
-        l1PtVars,
+        l1P3Vars,
         # hwQual = Var("hwQual()",int,doc="hardware qual"),
     )
 )
-
-# staEGTable = cms.EDProducer(
-#     "SimpleCandidateFlatTableProducer",
-#     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'), 
-#     cut = cms.string(""),
-#     name = cms.string("EG"),
-#     doc = cms.string("standalone EG merged endcap and barrel"),
-#     singleton = cms.bool(False), # the number of entries is variable
-#     variables = cms.PSet(
-#         l1PtVars,
-#         # hwQual = Var("hwQual()",int,doc="hardware qual"),
-    # )
-# )
-
-# staEGTable = cms.EDProducer(
-#     "SimpleL1EGBXCandidateFlatTableProducer", # note we're using the dedicated table producer introduced for EGammaBxCollection
-#     src = cms.InputTag("staEGmerged"),
-#     cut = cms.string(""),
-#     name = cms.string("EG"),
-#     doc = cms.string("standalone EG merged endcap and barrel"),
-#     variables = cms.PSet(
-#         l1PtVars,
-#         # hwQual = Var("hwQual()",int,doc="hardware qual"),
-#         ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio 
-#         saId  = Var("test_bit(hwQual(),0)", bool),
-#         eleId = Var("test_bit(hwQual(),1)", bool),
-#         phoId = Var("test_bit(hwQual(),2)", bool),
-#     )
-# )
-
 
 ### Muons
 
@@ -312,7 +281,7 @@ scJetTable = cms.EDProducer(
     variables = cms.PSet(
         l1P3Vars,
         et = Var("et",float),
-        z0 = Var("vz", float, "vertex z0"),
+        z0 = Var("vz", float, "vertex z0"), ## empty
     )
 )
 
@@ -327,16 +296,16 @@ caloJetTable = scJetTable.clone(
     src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
     name = cms.string("caloJet"),
     doc = cms.string("Calo Jets"),
+    cut = cms.string("pt > 20"), ## redundant -> input collection does not have jets below 10, might increase this to save space
 )
 
 ### SUMS
 
 puppiMetTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "EventSingletonSimpleFlatTableProducer",
     src = cms.InputTag("l1tMETPFProducer",""),
     name = cms.string("puppiMET"),
     doc = cms.string("Puppi MET"),
-    singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         l1PtVars,
         et = Var("et",float)
@@ -368,7 +337,7 @@ histoSumsTable = seededConeSumsTable.clone(
 caloTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tCaloJet","L1CaloTauCollectionBXV"),
-    cut = cms.string(""),
+    cut = cms.string("pt > 20"),
     name = cms.string("caloTau"),
     doc = cms.string("Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
@@ -402,6 +371,7 @@ p2GTL1TablesTask = cms.Task(
     gtVtxTable,
 )
     
+## L1 Objects
 p2L1TablesTask = cms.Task(
     ## Muons
     gmtTkMuTable,
@@ -423,7 +393,6 @@ p2L1TablesTask = cms.Task(
     nnTauTable,
     # GTT 
     vtxTable,
-
 )
 
 ## Add GT ntuple to L1Task
@@ -431,6 +400,24 @@ p2L1TablesTask.add(p2GTL1TablesTask)
 
 #### GENERATOR INFO
 from PhysicsTools.NanoAOD.genparticles_cff import *
-# genParticleTask, genParticleTablesTask
-p2L1TablesTask.add(genParticleTask)
-p2L1TablesTask.add(genParticleTablesTask)
+from PhysicsTools.NanoAOD.jetMC_cff import *
+from PhysicsTools.NanoAOD.met_cff import metMCTable
+## PU
+from PhysicsTools.NanoAOD.globals_cff import puTable
+## Gen taus?
+from PhysicsTools.NanoAOD.taus_cff import *
+
+## based on https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/nanogen_cff.py#L2-L36
+
+p2L1TablesTask.add(
+    genParticleTask, 
+    genParticleTablesTask,
+    genJetTable,
+    patJetPartonsNano,
+    genJetFlavourAssociation,
+    genJetFlavourTable,
+    metMCTable,
+    puTable,
+    genTauTask,
+)
+
