@@ -184,37 +184,11 @@ tkEleTable = tkPhotonTable.clone(
     # variables = charge  = Var("charge", int, doc="charge id"),
 )
 tkEleTable.variables.charge = Var("charge", int, doc="charge")
-tkEleTable.variables.z0     = Var("trkzVtx")
+tkEleTable.variables.z0     = Var("trkzVtx", float, "vertex z0")
 # tkEleTable.variables.caloEta = Var("EGRef.eta",float)
 # tkEleTable.variables.caloPhi = Var("EGRef.phi",float)
 
-## standalone EG
-# staEGbarrelTable = cms.EDProducer(
-#     "SimpleCandidateFlatTableProducer",
-#     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
-#     cut = cms.string(""),
-#     name = cms.string("EGbarrel"),
-#     doc = cms.string("standalone EG barrel"),
-#     singleton = cms.bool(False), # the number of entries is variable
-#     variables = cms.PSet(
-#         l1ObjVars,
-#     )
-# )
-
-# staEGendcapTable = cms.EDProducer(
-#     "SimpleCandidateFlatTableProducer",
-#     src = cms.InputTag('l1tLayer2EG','L1CtEgEE'),
-#     cut = cms.string(""),
-#     name = cms.string("EGendcap"),
-#     doc = cms.string("standalone EG endcap"),
-#     singleton = cms.bool(False), # the number of entries is variable
-#     variables = cms.PSet(
-#         l1ObjVars,
-#     )
-# )
-
 ## merge EG 
-
 staEGmerged = cms.EDProducer("CandViewMerger",
        src = cms.VInputTag(
            cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'), 

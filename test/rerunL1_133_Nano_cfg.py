@@ -152,7 +152,7 @@ process.GToutput = cms.OutputModule(
 process.pGToutput = cms.EndPath(process.GToutput)
 
 ## NANO
-process.load('l1Ph2Nano_cff.py')
+process.load('PhysicsTools.L1Nano.l1Ph2Nano_cff')
 
 process.outnano = cms.OutputModule("NanoAODOutputModule",
                                    fileName = cms.untracked.string("perfNano_Ph2Menu.root"),
