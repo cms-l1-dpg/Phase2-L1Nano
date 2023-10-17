@@ -142,8 +142,8 @@ gtEtSumTable = cms.EDProducer(
     name = cms.string("GTetSum"),
     doc = cms.string("GT CL2EtSum"),
     variables = cms.PSet(
-        pt = Var("pt", int, doc="MET pt"),
-        phi = Var("phi", int, doc="MET phi"),
+        pt = Var("pt", float, doc="MET pt"),
+        phi = Var("phi", float, doc="MET phi"),
     )
 )
 
@@ -151,13 +151,13 @@ gtHtSumTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2HtSum'),
     name = cms.string("GThtSum"),
-    doc = cms.string("GT CL2HtSum; idx 0 is HT, idx 1 is MHT"),
+    doc = cms.string("GT CL2HtSum"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         # l1GTObjVars,
-        mht = Var("pt", int, doc="MHT pt"),
-        phi = Var("phi", int, doc="MHT phi"),
-        #ht = Var("scasum", int, doc="HT"),
+        mht = Var("pt", float, doc="MHT pt"),
+        mhtPhi = Var("phi", float, doc="MHT phi"),
+        ht = Var("hwSca_sum_toInt()*0.03125", float, doc="HT"), ## HACK via hw value!
     )
 )
 
@@ -175,8 +175,7 @@ tkPhotonTable = cms.EDProducer(
         tkIso   = Var("trkIsol", float),
         tkIsoPV  = Var("trkIsolPV", float),
         pfIso   = Var("pfIsol", float),
-        puppiIsol  = Var("puppiIsol", float),
-
+        puppiIso  = Var("puppiIsol", float),
         ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio 
         saId  = Var("test_bit(hwQual(),0)", bool),
         eleId = Var("test_bit(hwQual(),1)", bool),
@@ -316,7 +315,7 @@ seededConeSumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT",""),
     name = cms.string("seededConeHTMHT"),
-    doc = cms.string("HT and MHT from SeededCone jets"),
+    doc = cms.string("HT and MHT from SeededCone jets; idx 0 is HT, idx 1 is MHT"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1PtVars
