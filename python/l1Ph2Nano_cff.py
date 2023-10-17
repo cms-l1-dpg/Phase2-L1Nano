@@ -30,7 +30,6 @@ l1ObjVars = cms.PSet(
 
 l1GTObjVars = cms.PSet(
     l1P3Vars,
-    # z0 = Var("vz",int,doc="z0"),
 )
 ### This above part can be taken from l1trig_cff starting from 13X
 ##################################################################
@@ -49,12 +48,13 @@ gtVtxTable = cms.EDProducer(
     variables = cms.PSet(
         l1GTObjVars,
         z0 = Var("vz",float),
+        hwZ0 = Var("hwZ0_toInt()",int)
     )
 )
 
 vtxTable = cms.EDProducer(
-    "SimpleVtxWordCandidateFlatTableProducer", ## note the use of a dedicated table producer which is defined in the plugins/L1TableProducer.cc
-    src = cms.InputTag('l1tVertexFinderEmulator','l1verticesEmulation'),
+    "SimpleL1VtxWordCandidateFlatTableProducer", ## note the use of a dedicated table producer which is defined in the plugins/L1TableProducer.cc
+    src = cms.InputTag('l1tVertexFinderEmulator','L1VerticesEmulation'),
     cut = cms.string(""),
     name = cms.string("gttVert"),
     doc = cms.string("GTT Vertices"),
@@ -67,46 +67,41 @@ vtxTable = cms.EDProducer(
 )
 
 ### GT
-gtTkEleTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag('l1tGTProducer','CL2Electrons'),
-    cut = cms.string(""),
-    name = cms.string("GTtkElectron"),
-    doc = cms.string("GT tkElectrons"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        l1GTObjVars,
-        #hwPt = Var("hwPT()",int,doc="hardware pt"),
-        z0 = Var("vz",float),
-    )
-)
-
-gtTkPhoTable = cms.EDProducer(
+gtTkPhoTable =cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Photons'),
-    cut = cms.string(""),
     name = cms.string("GTtkPhoton"),
     doc = cms.string("GT tkPhotons"),
+    cut = cms.string(""),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
-        #iso = Var("iso()",int,doc="z0"),
+        ## more physical values
+        # z0 = Var("vz",float),
+        # charge  = Var("charge", int, doc="charge id"),
+        ## hw values
+        hwQual = Var("hwQual_toInt()",int),
+        hwIso = Var("hwIso_toInt()",int),
+        # hwZ0 = Var("hwZ0_toInt()",int),
+        ## manual hack, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
+        iso = Var("hwIso_toInt()*0.25",float, doc = "absolute isolation"),
+        relIso = Var("hwIso_toInt()*0.25 / pt",float, doc = "relative isolation")
     )
 )
 
-gtTkMuTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+gtTkEleTable = gtTkPhoTable.clone(
+    src = cms.InputTag('l1tGTProducer','CL2Electrons'),
+    name = cms.string("GTtkElectron"),
+    doc = cms.string("GT tkElectrons"),
+)
+gtTkEleTable.variables.z0 = Var("vz",float)
+gtTkEleTable.variables.charge  = Var("charge", int, doc="charge id")
+gtTkEleTable.variables.hwZ0 = Var("hwZ0_toInt()",int)
+
+gtTkMuTable = gtTkEleTable.clone(
     src = cms.InputTag('l1tGTProducer','GMTTkMuons'),
-    cut = cms.string(""),
     name = cms.string("GTgmtTkMuon"),
     doc = cms.string("GT GMT tkMuon"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        l1GTObjVars,
-        #iso = Var("iso()",int,doc="z0"),
-        #hwQual = Var("hwQual()",int,doc="hwQual"),
-        z0 = Var("vz",float),
-    )
 )
 
 gtSCJetsTable = cms.EDProducer(
@@ -118,6 +113,14 @@ gtSCJetsTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
+        z0 = Var("vz",float),
+        charge  = Var("charge", int, doc="charge id"),
+        ## hw values
+        # hwQual = Var("hwQual_toInt()",int),
+        # hwIso = Var("hwIso_toInt()",int),
+        hwZ0 = Var("hwZ0_toInt()",int),
+        ## manual hack, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
+        # iso = Var("hwIso_toInt()*0.25",float)
     )
 )
 
@@ -170,8 +173,15 @@ tkPhotonTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1ObjVars,
-        tkIso   = Var("trkIsol", float, precision=8),
-        tkIsoPV  = Var("trkIsolPV", float, precision=8),
+        tkIso   = Var("trkIsol", float),
+        tkIsoPV  = Var("trkIsolPV", float),
+        pfIso   = Var("pfIsol", float),
+        puppiIsol  = Var("puppiIsol", float),
+
+        ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio 
+        saId  = Var("test_bit(hwQual(),0)", bool),
+        eleId = Var("test_bit(hwQual(),1)", bool),
+        phoId = Var("test_bit(hwQual(),2)", bool),
     )
 )
 
@@ -179,12 +189,9 @@ tkEleTable = tkPhotonTable.clone(
     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
     name = cms.string("tkElectron"),
     doc = cms.string("Tk Electrons"),
-    # variables = charge  = Var("charge", int, doc="charge id"),
 )
 tkEleTable.variables.charge = Var("charge", int, doc="charge")
 tkEleTable.variables.z0     = Var("trkzVtx", float, "vertex z0")
-# tkEleTable.variables.caloEta = Var("EGRef.eta",float)
-# tkEleTable.variables.caloPhi = Var("EGRef.phi",float)
 
 ## merge EG 
 staEGmerged = cms.EDProducer("CandViewMerger",
@@ -193,6 +200,19 @@ staEGmerged = cms.EDProducer("CandViewMerger",
            cms.InputTag('l1tLayer2EG','L1CtEgEE'),
   )
 )
+
+# #staEGTable = tkPhotonTable.clone(
+#     src = cms.InputTag("staEGmerged"),
+#     name = cms.string("EG"),
+#     doc = cms.string("standalone EG merged endcap and barrel"),
+#     variables = cms.PSet(
+#         l1P3Vars,
+#         ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio 
+#         saId  = Var("test_bit(hwQual(),0)", bool),
+#         eleId = Var("test_bit(hwQual(),1)", bool),
+#         phoId = Var("test_bit(hwQual(),2)", bool),
+#     )
+# )
 
 staEGTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
@@ -203,48 +223,83 @@ staEGTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1PtVars,
+        # hwQual = Var("hwQual()",int,doc="hardware qual"),
     )
 )
+
+# staEGTable = cms.EDProducer(
+#     "SimpleCandidateFlatTableProducer",
+#     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'), 
+#     cut = cms.string(""),
+#     name = cms.string("EG"),
+#     doc = cms.string("standalone EG merged endcap and barrel"),
+#     singleton = cms.bool(False), # the number of entries is variable
+#     variables = cms.PSet(
+#         l1PtVars,
+#         # hwQual = Var("hwQual()",int,doc="hardware qual"),
+    # )
+# )
+
+# staEGTable = cms.EDProducer(
+#     "SimpleL1EGBXCandidateFlatTableProducer", # note we're using the dedicated table producer introduced for EGammaBxCollection
+#     src = cms.InputTag("staEGmerged"),
+#     cut = cms.string(""),
+#     name = cms.string("EG"),
+#     doc = cms.string("standalone EG merged endcap and barrel"),
+#     variables = cms.PSet(
+#         l1PtVars,
+#         # hwQual = Var("hwQual()",int,doc="hardware qual"),
+#         ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio 
+#         saId  = Var("test_bit(hwQual(),0)", bool),
+#         eleId = Var("test_bit(hwQual(),1)", bool),
+#         phoId = Var("test_bit(hwQual(),2)", bool),
+#     )
+# )
+
 
 ### Muons
-gmtTkMuTable = cms.EDProducer(
+
+staMuTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag('l1tTkMuonsGmt',''),
-    cut = cms.string(""),
-    name = cms.string("gmtTkMuon"),
-    doc = cms.string("GMT Tk Muons"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        l1ObjVars,
-        charge  = Var("charge", int, doc="charge id"),
-        z0 = Var("phZ0()",float),
-        vz = Var("vz",float),
-        phPt = Var("phPt()",float),
-
-# phPt = Var("phPt()",float),
-# phEta()
-# phPhi()
-# phZ0()
-# phD0()
-# phCharge()
-# hwPt()
-# hwEta()
-# hwPhi()
-# hwZ0()
-# hwD0()
-# hwCharge()
-# hwIso()
-# hwQual()
-# hwBeta()
-
-    )
-)
-
-staMuTable = gmtTkMuTable.clone(
     src = cms.InputTag('l1tSAMuonsGmt','promptSAMuons'),
     name = cms.string("StaMu"),
     doc = cms.string("GMT STA Muons"),
+    cut = cms.string(""),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        # l1ObjVars,
+        ### WARNING : the pt/eta/phi/vz methods give rounded results -> use the "physical" accessors
+        # vz = Var("vz",float),
+        # charge = Var("charge", int, doc="charge id"),
+
+        ## physical values
+        #phPt = Var("phPt()",float),
+        pt  = Var("phPt()",float),
+        eta = Var("phEta()",float),
+        phi = Var("phPhi()",float),
+        z0 = Var("phZ0()",float),
+        d0 = Var("phD0()",float),
+        charge  = Var("phCharge", int, doc="charge id"),
+
+        ## hw Values
+        hwPt = Var("hwPt()",int,doc="hardware pt"),
+        hwEta = Var("hwEta()",int,doc="hardware eta"),
+        hwPhi = Var("hwPhi()",int,doc="hardware phi"),
+        hwQual = Var("hwQual()",int,doc="hardware qual"),
+        hwIso = Var("hwIso()",int,doc="hardware iso"),
+        hwBeta = Var("hwBeta()",int,doc="hardware beta"),
+        
+        # ## more info
+        # nStubs = Var("stubs().size()",int,doc="number of stubs"),
+    )
 )
+
+gmtTkMuTable = staMuTable.clone(
+    src = cms.InputTag('l1tTkMuonsGmtLowPtFix','l1tTkMuonsGmtLowPtFix'),
+    name = cms.string("gmtTkMuon"),
+    doc = cms.string("GMT Tk Muons"),
+)
+# gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
 
 ### Jets
 scJetTable = cms.EDProducer(
@@ -256,7 +311,8 @@ scJetTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
-        et = Var("et",float)
+        et = Var("et",float),
+        z0 = Var("vz", float, "vertex z0"),
     )
 )
 
@@ -282,7 +338,8 @@ puppiMetTable = cms.EDProducer(
     doc = cms.string("Puppi MET"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
-        l1PtVars
+        l1PtVars,
+        et = Var("et",float)
     )
 )
 
@@ -332,6 +389,7 @@ nnTauTable = cms.EDProducer(
     )
 )
 
+
 ## GT objects
 p2GTL1TablesTask = cms.Task(
     gtTkPhoTable,
@@ -370,3 +428,9 @@ p2L1TablesTask = cms.Task(
 
 ## Add GT ntuple to L1Task
 p2L1TablesTask.add(p2GTL1TablesTask)
+
+#### GENERATOR INFO
+from PhysicsTools.NanoAOD.genparticles_cff import *
+# genParticleTask, genParticleTablesTask
+p2L1TablesTask.add(genParticleTask)
+p2L1TablesTask.add(genParticleTablesTask)
