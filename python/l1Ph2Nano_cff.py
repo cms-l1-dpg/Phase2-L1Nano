@@ -2,6 +2,9 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.nano_eras_cff import *
 from PhysicsTools.NanoAOD.common_cff import *
 
+## Inspired by: 
+## FastPUPPI ntupler https://github.com/p2l1pfp/FastPUPPI/blob/12_5_X/NtupleProducer/python/runPerformanceNTuple.py
+## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideCandidateModules#Merging_Candidate_Collections 
 
 ##################################################################
 ### This part can be taken from l1trig_cff starting from 13X
@@ -32,7 +35,7 @@ l1GTObjVars = cms.PSet(
 ### This above part can be taken from l1trig_cff starting from 13X
 ##################################################################
 
-### Tables definitions
+### Tables definitions    
 
 ### Vertex
 
@@ -50,7 +53,7 @@ gtVtxTable = cms.EDProducer(
 )
 
 vtxTable = cms.EDProducer(
-    "SimpleVtxWordCandidateFlatTableProducer",
+    "SimpleVtxWordCandidateFlatTableProducer", ## note the use of a dedicated table producer which is defined in the plugins/L1TableProducer.cc
     src = cms.InputTag('l1tVertexFinderEmulator','l1verticesEmulation'),
     cut = cms.string(""),
     name = cms.string("gttVert"),
@@ -74,11 +77,6 @@ gtTkEleTable = cms.EDProducer(
     variables = cms.PSet(
         l1GTObjVars,
         #hwPt = Var("hwPT()",int,doc="hardware pt"),
-        # hwPt = Var("hwPT.to_float()",int,doc="hardware pt"),
-        # hwPt = Var("hwPT_()",int,doc="hardware pt"),
-        #hwEta = Var("hwEta()",int,doc="hardware eta"),
-        #hwPhi = Var("hwPhi()",int,doc="hardware phi"),
-        #z0 = Var("z0()",int,doc="z0"),
         z0 = Var("vz",float),
     )
 )
@@ -213,7 +211,7 @@ gmtTkMuTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tTkMuonsGmt',''),
     cut = cms.string(""),
-    name = cms.string("gmtTkMuons"),
+    name = cms.string("gmtTkMuon"),
     doc = cms.string("GMT Tk Muons"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -248,23 +246,6 @@ staMuTable = gmtTkMuTable.clone(
     doc = cms.string("GMT STA Muons"),
 )
 
-# staMuTable = cms.EDProducer(
-#     "SimpleCandidateFlatTableProducer",
-#     src = cms.InputTag('l1tSAMuonsGmt','promptSAMuons'),
-#     cut = cms.string(""),
-#     name = cms.string("StaMu"),
-#     doc = cms.string("GMT STA Muons"),
-#     singleton = cms.bool(False), # the number of entries is variable
-#     variables = cms.PSet(
-#         l1ObjVars,
-#         charge  = Var("charge", int, doc="charge id"),
-#         z0 = Var("phZ0()",float),
-#         vz = Var("vz",float),
-#         phPt = Var("phPt()",float),
-#     )
-# )
-
-
 ### Jets
 scJetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
@@ -275,31 +256,21 @@ scJetTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
+        et = Var("et",float)
     )
 )
 
-histoJetTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag("l1tPhase1JetCalibrator9x9" ,   "Phase1L1TJetFromPfCandidates"),
-    cut = cms.string(""),
+histoJetTable = scJetTable.clone(
+    src = cms.InputTag("l1tPhase1JetCalibrator9x9trimmed" ,   "Phase1L1TJetFromPfCandidates"),
     name = cms.string("histoJet"),
     doc = cms.string("Puppi Jets 9x9"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        l1P3Vars,
-    )
 )
 
-caloJetTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+
+caloJetTable = scJetTable.clone(
     src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
-    cut = cms.string(""),
     name = cms.string("caloJet"),
     doc = cms.string("Calo Jets"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        l1P3Vars,
-    )
 )
 
 ### SUMS
@@ -307,7 +278,6 @@ caloJetTable = cms.EDProducer(
 puppiMetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tMETPFProducer",""),
-    # cut = cms.string(""),
     name = cms.string("puppiMET"),
     doc = cms.string("Puppi MET"),
     singleton = cms.bool(True), # the number of entries is variable
@@ -316,11 +286,9 @@ puppiMetTable = cms.EDProducer(
     )
 )
 
-
 seededConeSumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT",""),
-    cut = cms.string(""),
     name = cms.string("seededConeHTMHT"),
     doc = cms.string("HT and MHT from SeededCone jets"),
     singleton = cms.bool(False), # the number of entries is variable
@@ -364,23 +332,8 @@ nnTauTable = cms.EDProducer(
     )
 )
 
-p2L1TablesTask = cms.Task(
-    # ## muons
-    # gmtTkMuTable,
-    # staMuTable,
-    # ## jets
-    # # scJetTable,
-    # histoJetTable,
-    # caloJetTable,
-    # ## sums
-    # puppiMetTable,
-    # seededConeSumsTable,
-    # histoSumsTable,
-    ## taus
-    # caloTauTable,
-    # nnTauTable,
-    
-    ## GT objects
+## GT objects
+p2GTL1TablesTask = cms.Task(
     gtTkPhoTable,
     gtTkEleTable,
     gtTkMuTable,
@@ -389,23 +342,31 @@ p2L1TablesTask = cms.Task(
     gtEtSumTable,
     gtHtSumTable,
     gtVtxTable,
+)
     
-    ## L1 objects
-    tkPhotonTable,
-    tkEleTable,
+p2L1TablesTask = cms.Task(
+    ## Muons
     gmtTkMuTable,
+    staMuTable,
+    ## EG
+    tkEleTable,
+    tkPhotonTable,
+    staEGmerged, staEGTable, ## Need to run merger before Table task! Stanalone EG – not in GT yet
+    # ## jets
     scJetTable,
-    nnTauTable,
-
+    histoJetTable,
+    caloJetTable,
+    # ## sums
     puppiMetTable,
     seededConeSumsTable,
-
-    # #staEGbarrelTable,
-    # #staEGendcapTable,
+    histoSumsTable,
+    # taus
+    caloTauTable,
+    nnTauTable,
+    # GTT 
     vtxTable,
 
-    ## Stanalone EG – not in GT yet
-    # staEGmerged, staEGTable,
-    # staEGbarrelTable,
-    # staEGendcapTable,
 )
+
+## Add GT ntuple to L1Task
+p2L1TablesTask.add(p2GTL1TablesTask)
