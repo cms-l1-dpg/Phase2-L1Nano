@@ -109,7 +109,7 @@ gtSCJetsTable = cms.EDProducer(
     src = cms.InputTag('l1tGTProducer','CL2Jets'),
     cut = cms.string(""),
     name = cms.string("GTscJets"),
-    doc = cms.string("GT seededCone Puppi Jets"),
+    doc = cms.string("GT CL2Jets: seededCone Puppi Jets"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
@@ -137,7 +137,7 @@ gtNNTauTable = cms.EDProducer(
 )
 
 gtEtSumTable = cms.EDProducer(
-    "EventSingletonSimpleFlatTableProducer",
+    "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2EtSum'),
     name = cms.string("GTetSum"),
     doc = cms.string("GT CL2EtSum"),
@@ -302,7 +302,7 @@ caloJetTable = scJetTable.clone(
 ### SUMS
 
 puppiMetTable = cms.EDProducer(
-    "EventSingletonSimpleFlatTableProducer",
+    "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tMETPFProducer",""),
     name = cms.string("puppiMET"),
     doc = cms.string("Puppi MET"),
