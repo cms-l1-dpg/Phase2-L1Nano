@@ -42,28 +42,43 @@ gtVtxTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','GTTPrimaryVert'),
     cut = cms.string(""),
-    name = cms.string("GTvertices"),
+    name = cms.string("GTVertices"),
     doc = cms.string("GT GTT Vertices"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
-        l1GTObjVars,
-        z0 = Var("vz",float),
-        hwZ0 = Var("hwZ0_toInt()",int)
+        z0 = Var("vz",float, doc = "primary vertex position z coordinate"),
+        # sumPt = Var("hwSum_pT_pv_toInt()*0.25",float, doc = "sum pt of tracks"),
+        ## hw vars
+        hwZ0 = Var("hwZ0_toInt()",int, doc = "HW primary vertex position z coordinate"),
+        # hwSum_pT_pv = Var("hwSum_pT_pv_toInt()",int, doc = "HW sum pt of tracks"),
     )
+)
+
+### Store Primary Vertex only (first vertex)
+gtPvTable = gtVtxTable.clone(
+    name = cms.string("GTPV"),
+    doc = cms.string("GT GTT Leading Primary Vertex"),
+    maxLen = cms.uint32(1),
 )
 
 vtxTable = cms.EDProducer(
     "SimpleL1VtxWordCandidateFlatTableProducer", ## note the use of a dedicated table producer which is defined in the plugins/L1TableProducer.cc
     src = cms.InputTag('l1tVertexFinderEmulator','L1VerticesEmulation'),
     cut = cms.string(""),
-    name = cms.string("gttVert"),
+    name = cms.string("L1Vertices"),
     doc = cms.string("GTT Vertices"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
-        # l1GTObjVars,
-        z0 = Var("z0()",float),
-        pt = Var("pt()",float),
+        z0 = Var("z0()",float, doc = "primary vertex position z coordinate"),
+        sumPt = Var("pt()",float, doc = "sum pt of tracks")
     )
+)
+
+### Store Primary Vertex only (first vertex)
+pvtxTable = vtxTable.clone(
+    maxLen = cms.uint32(1),
+    name = cms.string("L1PV"),
+    doc = cms.string("GTT Leading Primary Vertex"),
 )
 
 ### GT
@@ -114,11 +129,11 @@ gtSCJetsTable = cms.EDProducer(
     variables = cms.PSet(
         l1GTObjVars,
         z0 = Var("vz",float),
-        charge  = Var("charge", int, doc="charge id"),
+        # charge  = Var("charge", int, doc="charge id"),
         ## hw values
         # hwQual = Var("hwQual_toInt()",int),
         # hwIso = Var("hwIso_toInt()",int),
-        hwZ0 = Var("hwZ0_toInt()",int),
+        # hwZ0 = Var("hwZ0_toInt()",int),
         ## manual hack, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
         # iso = Var("hwIso_toInt()*0.25",float)
     )
@@ -141,6 +156,7 @@ gtEtSumTable = cms.EDProducer(
     src = cms.InputTag('l1tGTProducer','CL2EtSum'),
     name = cms.string("GTetSum"),
     doc = cms.string("GT CL2EtSum"),
+    singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         pt = Var("pt", float, doc="MET pt"),
         phi = Var("phi", float, doc="MET phi"),
@@ -295,7 +311,7 @@ caloJetTable = scJetTable.clone(
     src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
     name = cms.string("caloJet"),
     doc = cms.string("Calo Jets"),
-    cut = cms.string("pt > 20"), ## redundant -> input collection does not have jets below 10, might increase this to save space
+    cut = cms.string("pt > 30"), ## increase this to save space
 )
 
 ### SUMS
@@ -368,6 +384,7 @@ p2GTL1TablesTask = cms.Task(
     gtEtSumTable,
     gtHtSumTable,
     gtVtxTable,
+    gtPvTable,
 )
     
 ## L1 Objects
@@ -392,6 +409,7 @@ p2L1TablesTask = cms.Task(
     nnTauTable,
     # GTT 
     vtxTable,
+    pvtxTable,
 )
 
 ## Add GT ntuple to L1Task
