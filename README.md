@@ -8,6 +8,7 @@ Tested under latest CMSSW_13_3 "nightly" build: `CMSSW_13_3_X_2023-10-10-2300`:
 ```bash
 cmsrel CMSSW_13_3_X_2023-10-10-2300
 cd CMSSW_13_3_X_2023-10-10-2300/src
+git cms-rebase-topic -u artlbv:CMSSW_13_3_X_FixP2GT_HW_access # getting fix for P2GT HW access/conversion to int
 git clone git@github.com:cms-l1-dpg/Phase2-L1Nano.git PhysicsTools/L1Nano
 scram b -j 8
 ```
