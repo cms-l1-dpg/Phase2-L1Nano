@@ -18,7 +18,7 @@ process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.Geometry.GeometryExtended2026D95Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
-process.load('L1Trigger.Phase2L1GT.l1tGTProducer_cff')
+# process.load('L1Trigger.Phase2L1GT.l1tGTProducer_cff')
 process.load('L1Trigger.Phase2L1GT.l1tGTMenu_hadr_metSeeds_cff')
 process.load('L1Trigger.Phase2L1GT.l1tGTMenu_lepSeeds_cff')
 process.load('L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff')
@@ -27,7 +27,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1),
+    input = cms.untracked.int32(1),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
@@ -109,6 +109,27 @@ process.GlobalTag = GlobalTag(process.GlobalTag, '131X_mcRun4_realistic_v5', '')
 process.FEVTDEBUGHLToutput.outputCommands.append('keep *P2GT*_*_*_*')
 process.FEVTDEBUGHLToutput.outputCommands.append('drop l1tPFJets_*_*_*')
 
+### Fix GT producer with new vertex name
+import FWCore.ParameterSet.Config as cms
+from L1Trigger.Phase2L1GT.l1tGTScales import scale_parameter
+
+process.l1tGTProducer = cms.EDProducer(
+    "L1GTProducer",
+    scales=scale_parameter,
+    GTTPromptJets = cms.InputTag("l1tTrackJetsEmulation", "L1TrackJets"),
+    GTTDisplacedJets = cms.InputTag("l1tTrackJetsExtendedEmulation", "L1TrackJetsExtended"),
+    GTTPrimaryVert = cms.InputTag("l1tVertexFinderEmulator", "L1VerticesEmulation"),
+    GMTSaPromptMuons = cms.InputTag("l1tSAMuonsGmt", "promptSAMuons"),
+    GMTSaDisplacedMuons = cms.InputTag("l1tSAMuonsGmt", "displacedSAMuons"),
+    GMTTkMuons = cms.InputTag("l1tTkMuonsGmtLowPtFix", "l1tTkMuonsGmtLowPtFix"),
+    CL2Jets = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulator"),
+    CL2Electrons = cms.InputTag("l1tLayer2EG", "L1CtTkElectron"),
+    CL2Photons = cms.InputTag("l1tLayer2EG", "L1CtTkEm"),
+    CL2Taus = cms.InputTag("l1tNNTauProducerPuppi", "L1PFTausNN"),
+    CL2EtSum = cms.InputTag("l1tMETPFProducer"),
+    CL2HtSum = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT")
+)
+
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.Phase2L1GTProducer = cms.Path(process.l1tGTProducer)
@@ -137,8 +158,8 @@ process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 ## NTUPLERS
 
 ## GT ntupler
-process.load('L1Trigger.Configuration.GTemulator_cff')
-process.GTemulation_step = cms.Path(process.GTemulator)
+# process.load('L1Trigger.Configuration.GTemulator_cff')
+# process.GTemulation_step = cms.Path(process.GTemulator)
 
 process.GToutput = cms.OutputModule(
     "PoolOutputModule",
@@ -177,7 +198,7 @@ process.schedule = cms.Schedule(
     process.pSingleEGEle51,process.pSingleIsoTkEle28,
     process.pSingleIsoTkPho36,process.pSingleTkEle36,process.pSingleTkMuon22,process.pTripleTkMuon5_3_3,
     ## GT ntuple
-    process.pGToutput,
+    # process.pGToutput,
     process.endjob_step,
     # process.FEVTDEBUGHLToutput_step,
     process.end,
