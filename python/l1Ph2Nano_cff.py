@@ -114,6 +114,7 @@ gtTkEleTable = gtTkPhoTable.clone(
 )
 
 ### FIXME
+# gtTkEleTable.variables.z0 = Var("vz",float) ## this is the correct line
 gtTkEleTable.variables.z0 = Var("vz / 2.",float) ### FIXME -> change done due to ap_fix type mismatch
 ### FIXME
 
@@ -126,6 +127,9 @@ gtTkMuTable = gtTkEleTable.clone(
     doc = cms.string("GT GMT tkMuon"),
 )
 gtTkMuTable.variables.z0 = Var("vz",float)
+# ### FIXME GMT uses the opposite definition of charge than GT and CTL2
+gtTkMuTable.variables.charge = Var("-charge", int, doc="charge id")
+# ### FIXME
 
 gtSCJetsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
