@@ -2,12 +2,17 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.nano_eras_cff import *
 from PhysicsTools.NanoAOD.common_cff import *
 
-## Inspired by: 
+## Import GT scales for HW to physical value conversion
+from L1Trigger.Phase2L1GT.l1tGTScales import scale_parameter as GTscales
+
+## Inspired by:
 ## FastPUPPI ntupler https://github.com/p2l1pfp/FastPUPPI/blob/12_5_X/NtupleProducer/python/runPerformanceNTuple.py
-## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideCandidateModules#Merging_Candidate_Collections 
+## https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideCandidateModules#Merging_Candidate_Collections
 
 ##################################################################
 ### This part can be taken from l1trig_cff starting from 13X
+## from PhysicsTools.NanoAOD.l1trig_cff import *
+
 l1_float_precision_=16
 
 l1PtVars = cms.PSet(
@@ -34,7 +39,7 @@ l1GTObjVars = cms.PSet(
 ### This above part can be taken from l1trig_cff starting from 13X
 ##################################################################
 
-### Tables definitions    
+### Tables definitions
 
 ### Vertex
 
@@ -42,7 +47,7 @@ gtVtxTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','GTTPrimaryVert'),
     cut = cms.string(""),
-    name = cms.string("GTVertices"),
+    name = cms.string("L1GTVertex"),
     doc = cms.string("GT GTT Vertices"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -56,7 +61,7 @@ gtVtxTable = cms.EDProducer(
 
 ### Store Primary Vertex only (first vertex)
 gtPvTable = gtVtxTable.clone(
-    name = cms.string("GTPV"),
+    name = cms.string("L1GTPV"),
     doc = cms.string("GT GTT Leading Primary Vertex"),
     maxLen = cms.uint32(1),
 )
@@ -65,7 +70,7 @@ vtxTable = cms.EDProducer(
     "SimpleL1VtxWordCandidateFlatTableProducer", ## note the use of a dedicated table producer which is defined in the plugins/L1TableProducer.cc
     src = cms.InputTag('l1tVertexFinderEmulator','L1VerticesEmulation'),
     cut = cms.string(""),
-    name = cms.string("L1Vertices"),
+    name = cms.string("L1Vertex"),
     doc = cms.string("GTT Vertices"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -85,28 +90,26 @@ pvtxTable = vtxTable.clone(
 gtTkPhoTable =cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Photons'),
-    name = cms.string("GTtkPhoton"),
+    name = cms.string("L1GTtkPhoton"),
     doc = cms.string("GT tkPhotons"),
     cut = cms.string(""),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
-        ## more physical values
-        # z0 = Var("vz",float),
-        # charge  = Var("charge", int, doc="charge id"),
         ## hw values
+        # hwPt = Var("hwPT_toInt()",int,doc="hardware pt"),
         hwQual = Var("hwQual_toInt()",int),
         hwIso = Var("hwIso_toInt()",int),
-        # hwZ0 = Var("hwZ0_toInt()",int),
-        ## manual hack, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        iso = Var("hwIso_toInt()*0.25",float, doc = "absolute isolation"),
-        relIso = Var("hwIso_toInt()*0.25 / pt",float, doc = "relative isolation")
+        ## more physical values
+        ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
+        iso = Var(f"hwIso_toInt()*{GTscales.isolation_lsb.value()}",float, doc = "absolute isolation"),
+        relIso = Var(f"hwIso_toInt()*{GTscales.isolation_lsb.value()} / pt",float, doc = "relative isolation")
     )
 )
 
 gtTkEleTable = gtTkPhoTable.clone(
     src = cms.InputTag('l1tGTProducer','CL2Electrons'),
-    name = cms.string("GTtkElectron"),
+    name = cms.string("L1GTtkElectron"),
     doc = cms.string("GT tkElectrons"),
 )
 gtTkEleTable.variables.z0 = Var("vz",float)
@@ -115,7 +118,7 @@ gtTkEleTable.variables.hwZ0 = Var("hwZ0_toInt()",int)
 
 gtTkMuTable = gtTkEleTable.clone(
     src = cms.InputTag('l1tGTProducer','GMTTkMuons'),
-    name = cms.string("GTgmtTkMuon"),
+    name = cms.string("L1GTgmtTkMuon"),
     doc = cms.string("GT GMT tkMuon"),
 )
 
@@ -123,19 +126,12 @@ gtSCJetsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Jets'),
     cut = cms.string(""),
-    name = cms.string("GTscJets"),
+    name = cms.string("L1GTscJet"),
     doc = cms.string("GT CL2Jets: seededCone Puppi Jets"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
         z0 = Var("vz",float),
-        # charge  = Var("charge", int, doc="charge id"),
-        ## hw values
-        # hwQual = Var("hwQual_toInt()",int),
-        # hwIso = Var("hwIso_toInt()",int),
-        # hwZ0 = Var("hwZ0_toInt()",int),
-        ## manual hack, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        # iso = Var("hwIso_toInt()*0.25",float)
     )
 )
 
@@ -143,7 +139,7 @@ gtNNTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Taus'),
     cut = cms.string(""),
-    name = cms.string("GTnnTaus"),
+    name = cms.string("L1GTnnTau"),
     doc = cms.string("GT CL2Taus: NN puppi Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -154,7 +150,7 @@ gtNNTauTable = cms.EDProducer(
 gtEtSumTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2EtSum'),
-    name = cms.string("GTetSum"),
+    name = cms.string("L1GTpuppiMET"),
     doc = cms.string("GT CL2EtSum"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
@@ -166,14 +162,14 @@ gtEtSumTable = cms.EDProducer(
 gtHtSumTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2HtSum'),
-    name = cms.string("GThtSum"),
+    name = cms.string("L1GTscJetSum"),
     doc = cms.string("GT CL2HtSum"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         # l1GTObjVars,
         mht = Var("pt", float, doc="MHT pt"),
         mhtPhi = Var("phi", float, doc="MHT phi"),
-        ht = Var("hwSca_sum_toInt()*0.03125", float, doc="HT"), ## HACK via hw value!
+        ht = Var(f"hwSca_sum_toInt()*{GTscales.sca_sum_lsb.value()}", float, doc="HT"), ## HACK via hw value!
     )
 )
 
@@ -183,7 +179,7 @@ tkPhotonTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tLayer2EG','L1CtTkEm'),
     cut = cms.string(""),
-    name = cms.string("tkPhoton"),
+    name = cms.string("L1tkPhoton"),
     doc = cms.string("Tk Photons (EM)"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -192,7 +188,7 @@ tkPhotonTable = cms.EDProducer(
         tkIsoPV  = Var("trkIsolPV", float),
         pfIso   = Var("pfIsol", float),
         puppiIso  = Var("puppiIsol", float),
-        ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio 
+        ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio
         saId  = Var("test_bit(hwQual(),0)", bool),
         eleId = Var("test_bit(hwQual(),1)", bool),
         phoId = Var("test_bit(hwQual(),2)", bool),
@@ -201,30 +197,27 @@ tkPhotonTable = cms.EDProducer(
 
 tkEleTable = tkPhotonTable.clone(
     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
-    name = cms.string("tkElectron"),
+    name = cms.string("L1tkElectron"),
     doc = cms.string("Tk Electrons"),
 )
 tkEleTable.variables.charge = Var("charge", int, doc="charge")
-tkEleTable.variables.z0     = Var("trkzVtx", float, "vertex z0")
+tkEleTable.variables.z0     = Var("trkzVtx", float, "track vertex z0")
 
-## merge EG 
+# merge EG
 staEGmerged = cms.EDProducer("CandViewMerger",
        src = cms.VInputTag(
-           cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'), 
+           cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
            cms.InputTag('l1tLayer2EG','L1CtEgEE'),
   )
 )
 
 # #staEGTable = tkPhotonTable.clone(
 #     src = cms.InputTag("staEGmerged"),
-#     name = cms.string("EG"),
+#     name = cms.string("L1EG"),
 #     doc = cms.string("standalone EG merged endcap and barrel"),
 #     variables = cms.PSet(
 #         l1P3Vars,
-#         ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio 
-#         saId  = Var("test_bit(hwQual(),0)", bool),
-#         eleId = Var("test_bit(hwQual(),1)", bool),
-#         phoId = Var("test_bit(hwQual(),2)", bool),
+
 #     )
 # )
 
@@ -232,12 +225,18 @@ staEGTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("staEGmerged"),
     cut = cms.string(""),
-    name = cms.string("EG"),
+    name = cms.string("L1EG"),
     doc = cms.string("standalone EG merged endcap and barrel"),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
-        # hwQual = Var("hwQual()",int,doc="hardware qual"),
+        ### NOTE THE BELOW DOES NOT WORK FOR NOW
+        ### This only works when using each collection barrel/endcap separately with the SimpleTriggerL1EGFlatTableProducer -> Need to fix this !
+        # hwQual = Var("hwQual",int,doc="hardware qual"),
+        ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio
+        # saId  = Var("test_bit(hwQual(),0)", bool),
+        # eleId = Var("test_bit(hwQual(),1)", bool),
+        # phoId = Var("test_bit(hwQual(),2)", bool),
     )
 )
 
@@ -246,7 +245,7 @@ staEGTable = cms.EDProducer(
 staMuTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tSAMuonsGmt','promptSAMuons'),
-    name = cms.string("StaMu"),
+    name = cms.string("L1StaMu"),
     doc = cms.string("GMT STA Muons"),
     cut = cms.string(""),
     singleton = cms.bool(False), # the number of entries is variable
@@ -272,7 +271,7 @@ staMuTable = cms.EDProducer(
         hwQual = Var("hwQual()",int,doc="hardware qual"),
         hwIso = Var("hwIso()",int,doc="hardware iso"),
         hwBeta = Var("hwBeta()",int,doc="hardware beta"),
-        
+
         # ## more info
         # nStubs = Var("stubs().size()",int,doc="number of stubs"),
     )
@@ -280,7 +279,7 @@ staMuTable = cms.EDProducer(
 
 gmtTkMuTable = staMuTable.clone(
     src = cms.InputTag('l1tTkMuonsGmtLowPtFix','l1tTkMuonsGmtLowPtFix'),
-    name = cms.string("gmtTkMuon"),
+    name = cms.string("L1gmtTkMuon"),
     doc = cms.string("GMT Tk Muons"),
 )
 # gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
@@ -290,7 +289,7 @@ scJetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tSCPFL1PuppiCorrectedEmulator'),
     cut = cms.string(""),
-    name = cms.string("seededConeJet"),
+    name = cms.string("L1scJet"),
     doc = cms.string("SeededCone 0.4 Puppi jet"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -302,14 +301,14 @@ scJetTable = cms.EDProducer(
 
 histoJetTable = scJetTable.clone(
     src = cms.InputTag("l1tPhase1JetCalibrator9x9trimmed" ,   "Phase1L1TJetFromPfCandidates"),
-    name = cms.string("histoJet"),
+    name = cms.string("L1histoJet"),
     doc = cms.string("Puppi Jets 9x9"),
 )
 
 
 caloJetTable = scJetTable.clone(
     src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
-    name = cms.string("caloJet"),
+    name = cms.string("L1caloJet"),
     doc = cms.string("Calo Jets"),
     cut = cms.string("pt > 30"), ## increase this to save space
 )
@@ -319,7 +318,7 @@ caloJetTable = scJetTable.clone(
 puppiMetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tMETPFProducer",""),
-    name = cms.string("puppiMET"),
+    name = cms.string("L1puppiMET"),
     doc = cms.string("Puppi MET"),
     variables = cms.PSet(
         l1PtVars,
@@ -330,11 +329,13 @@ puppiMetTable = cms.EDProducer(
 seededConeSumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT",""),
-    name = cms.string("seededConeHTMHT"),
+    name = cms.string("L1scJetSum"),
     doc = cms.string("HT and MHT from SeededCone jets; idx 0 is HT, idx 1 is MHT"),
     singleton = cms.bool(False), # the number of entries is variable
+    cut = cms.string(""),
     variables = cms.PSet(
-        l1PtVars
+        l1PtVars,
+        #ht = Var("pt[0]", float)
     )
 )
 
@@ -343,7 +344,7 @@ seededConeSumsTable = cms.EDProducer(
 
 histoSumsTable = seededConeSumsTable.clone(
     src = cms.InputTag("l1tPhase1JetSumsProducer9x9","Sums"),
-    name = cms.string("histoHTMHT"),
+    name = cms.string("L1histoHTMHT"),
     doc = cms.string("HT and MHT from histogrammed jets"),
     )
 
@@ -353,7 +354,7 @@ caloTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tCaloJet","L1CaloTauCollectionBXV"),
     cut = cms.string("pt > 20"),
-    name = cms.string("caloTau"),
+    name = cms.string("L1caloTau"),
     doc = cms.string("Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -365,7 +366,7 @@ nnTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tNNTauProducerPuppi","L1PFTausNN"),
     cut = cms.string(""),
-    name = cms.string("nnTau"),
+    name = cms.string("L1nnTau"),
     doc = cms.string("NN Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -386,7 +387,7 @@ p2GTL1TablesTask = cms.Task(
     gtVtxTable,
     gtPvTable,
 )
-    
+
 ## L1 Objects
 p2L1TablesTask = cms.Task(
     ## Muons
@@ -407,7 +408,7 @@ p2L1TablesTask = cms.Task(
     # taus
     caloTauTable,
     nnTauTable,
-    # GTT 
+    # GTT
     vtxTable,
     pvtxTable,
 )
@@ -427,7 +428,7 @@ from PhysicsTools.NanoAOD.taus_cff import *
 ## based on https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/nanogen_cff.py#L2-L36
 
 p2L1TablesTask.add(
-    genParticleTask, 
+    genParticleTask,
     genParticleTablesTask,
     genJetTable,
     patJetPartonsNano,
@@ -437,4 +438,3 @@ p2L1TablesTask.add(
     puTable,
     genTauTask,
 )
-
