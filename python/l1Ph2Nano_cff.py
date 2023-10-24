@@ -273,6 +273,32 @@ staEGTable = cms.EDProducer(
     )
 )
 
+staEGebTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
+    cut = cms.string(""),
+    name = cms.string("L1EGbarrel"),
+    doc = cms.string("standalone EG barrel"),
+    # singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1P3Vars,
+
+        ### FIXME
+        ### This only works when using each collection barrel/endcap separately with the SimpleTriggerL1EGFlatTableProducer -> Need to fix this !
+        hwQual = Var("hwQual",int,doc="hardware qual"),
+        # quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio
+        saId  = Var("test_bit(hwQual(),0)", bool),
+        eleId = Var("test_bit(hwQual(),1)", bool),
+        phoId = Var("test_bit(hwQual(),2)", bool),
+    )
+)
+
+staEGeeTable =  staEGebTable.clone(
+    src = cms.InputTag('l1tLayer2EG','L1CtEgEE'),
+    name = cms.string("L1EGendcap"),
+    doc = cms.string("standalone EG endcap"),
+)
+
 ### Muons
 
 staMuTable = cms.EDProducer(
@@ -372,11 +398,8 @@ seededConeSumsTable = cms.EDProducer(
     )
 )
 
-### CHANGE TO TRIMMED WHEN AVAILABLE
-### TAG IS l1tPhase1JetSumsProducer9x9trimmed
-
 histoSumsTable = seededConeSumsTable.clone(
-    src = cms.InputTag("l1tPhase1JetSumsProducer9x9","Sums"),
+    src = cms.InputTag("l1tPhase1JetSumsProducer9x9trimmed","Sums"),
     name = cms.string("L1histoHTMHT"),
     doc = cms.string("HT and MHT from histogrammed jets"),
     )
@@ -421,60 +444,61 @@ nnTauTable = cms.EDProducer(
     )
 )
 
-# ## GT objects
-# p2GTL1TablesTask = cms.Task(
-#     gtTkPhoTable,
-#     gtTkEleTable,
-#     gtTkMuTable,
-#     gtSCJetsTable,
-#     gtNNTauTable,
-#     gtEtSumTable,
-#     gtHtSumTable,
-#     gtVtxTable,
-#     gtPvTable,
-# )
+## GT objects
+p2GTL1TablesTask = cms.Task(
+    gtTkPhoTable,
+    gtTkEleTable,
+    gtTkMuTable,
+    gtSCJetsTable,
+    gtNNTauTable,
+    gtEtSumTable,
+    gtHtSumTable,
+    gtVtxTable,
+    gtPvTable,
+)
 
-# ## L1 Objects
-# p2L1TablesTask = cms.Task(
-#     ## Muons
-#     gmtTkMuTable,
-#     staMuTable,
-#     ## EG
-#     tkEleTable,
-#     tkPhotonTable,
-#     staEGmerged, staEGTable, ## Need to run merger before Table task! Stanalone EG – not in GT yet
-#     # ## jets
-#     scJetTable,
-#     histoJetTable,
-#     caloJetTable,
-#     # ## sums
-#     puppiMetTable,
-#     seededConeSumsTable,
-#     histoSumsTable,
-#     # taus
-#     caloTauTable,
-#     nnTauTable,
-#     # GTT
-#     vtxTable,
-#     pvtxTable,
-# )
+## L1 Objects
+p2L1TablesTask = cms.Task(
+    ## Muons
+    gmtTkMuTable,
+    staMuTable,
+    ## EG
+    tkEleTable,
+    tkPhotonTable,
+    staEGmerged, staEGTable, ## Need to run merger before Table task! Stanalone EG – not in GT yet
+    staEGebTable, staEGeeTable,
+    # ## jets
+    scJetTable,
+    histoJetTable,
+    caloJetTable,
+    # ## sums
+    puppiMetTable,
+    seededConeSumsTable,
+    histoSumsTable,
+    # taus
+    caloTauTable,
+    nnTauTable,
+    # GTT
+    vtxTable,
+    pvtxTable,
+)
 
 # ## Add GT ntuple to L1Task
 # p2L1TablesTask.add(p2GTL1TablesTask)
 
 
-## FOR GT vs L1 COMPARISON we order the tables like below
-p2L1TablesTask = cms.Task(
-    gtTkPhoTable,tkPhotonTable,
-    gtTkEleTable,tkEleTable,
-    gtTkMuTable, gmtTkMuTable,
-    gtSCJetsTable,scJetTable,
-    gtNNTauTable,nnTauTable,
-    gtEtSumTable,puppiMetTable,
-    gtHtSumTable,seededConeSumsTable,
-    gtVtxTable,vtxTable,
-    gtPvTable,pvtxTable,
-)
+# ## FOR GT vs L1 COMPARISON we order the tables like below
+# p2L1TablesTask = cms.Task(
+#     gtTkPhoTable,tkPhotonTable,
+#     gtTkEleTable,tkEleTable,
+#     gtTkMuTable, gmtTkMuTable,
+#     gtSCJetsTable,scJetTable,
+#     gtNNTauTable,nnTauTable,
+#     gtEtSumTable,puppiMetTable,
+#     gtHtSumTable,seededConeSumsTable,
+#     gtVtxTable,vtxTable,
+#     gtPvTable,pvtxTable,
+# )
 
 #### GENERATOR INFO
 from PhysicsTools.NanoAOD.genparticles_cff import *
@@ -487,14 +511,14 @@ from PhysicsTools.NanoAOD.taus_cff import *
 
 ## based on https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/nanogen_cff.py#L2-L36
 
-# p2L1TablesTask.add(
-#     genParticleTask,
-#     genParticleTablesTask,
-#     genJetTable,
-#     patJetPartonsNano,
-#     genJetFlavourAssociation,
-#     genJetFlavourTable,
-#     metMCTable,
-#     puTable,
-#     genTauTask,
-# )
+p2L1TablesTask.add(
+    genParticleTask,
+    genParticleTablesTask,
+    genJetTable,
+    patJetPartonsNano,
+    genJetFlavourAssociation,
+    genJetFlavourTable,
+    metMCTable,
+    puTable,
+    genTauTask,
+)
