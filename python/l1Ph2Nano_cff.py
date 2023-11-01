@@ -3,7 +3,7 @@ from PhysicsTools.NanoAOD.nano_eras_cff import *
 from PhysicsTools.NanoAOD.common_cff import *
 
 ## Import GT scales for HW to physical value conversion
-from L1Trigger.Phase2L1GT.l1tGTScales import scale_parameter as GTscales
+from L1Trigger.Phase2L1GT.l1tGTScales import scale_parameter
 
 ## Inspired by:
 ## FastPUPPI ntupler https://github.com/p2l1pfp/FastPUPPI/blob/12_5_X/NtupleProducer/python/runPerformanceNTuple.py
@@ -102,8 +102,8 @@ gtTkPhoTable =cms.EDProducer(
         hwIso = Var("hwIso_toInt()",int),
         ## more physical values
         ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        iso = Var(f"hwIso_toInt()*{GTscales.isolation_lsb.value()}",float, doc = "absolute isolation"),
-        relIso = Var(f"hwIso_toInt()*{GTscales.isolation_lsb.value()} / pt",float, doc = "relative isolation")
+        iso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()}",float, doc = "absolute isolation"),
+        relIso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()} / pt",float, doc = "relative isolation")
     )
 )
 
@@ -153,7 +153,7 @@ gtNNTauTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
-        #z0 = Var(f"hwSeed_z0_toInt()*{GTscales.seed_z0_lsb.value()}",float, doc = "z0"),
+        #z0 = Var(f"hwSeed_z0_toInt()*{scale_parameter.seed_z0_lsb.value()}",float, doc = "z0"),
         ### FIXME
         ### MANUAL HACK to fix the GT tau z0 scale and also the factor 2 due to wrong ap_type -> FIXME
         z0 = Var("hwSeed_z0_toInt() * (1/40.)",float, doc = "z0"),
@@ -184,7 +184,7 @@ gtHtSumTable = cms.EDProducer(
         # l1GTObjVars,
         mht = Var("pt", float, doc="MHT pt"),
         mhtPhi = Var("phi", float, doc="MHT phi"),
-        ht = Var(f"hwSca_sum_toInt()*{GTscales.sca_sum_lsb.value()}", float, doc="HT"), ## HACK via hw value!
+        ht = Var(f"hwSca_sum_toInt()*{scale_parameter.sca_sum_lsb.value()}", float, doc="HT"), ## HACK via hw value!
     )
 )
 
