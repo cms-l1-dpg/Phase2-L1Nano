@@ -484,7 +484,7 @@ p2L1TablesTask = cms.Task(
 )
 
 # ## Add GT ntuple to L1Task
-# p2L1TablesTask.add(p2GTL1TablesTask)
+p2L1TablesTask.add(p2GTL1TablesTask)
 
 
 # ## FOR GT vs L1 COMPARISON we order the tables like below
