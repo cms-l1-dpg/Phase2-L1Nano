@@ -18,7 +18,7 @@ process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.Geometry.GeometryExtended2026D95Reco_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
-# process.load('L1Trigger.Phase2L1GT.l1tGTProducer_cff')
+process.load('L1Trigger.Phase2L1GT.l1tGTProducer_cff')
 process.load('L1Trigger.Phase2L1GT.l1tGTMenu_hadr_metSeeds_cff')
 process.load('L1Trigger.Phase2L1GT.l1tGTMenu_lepSeeds_cff')
 process.load('L1Trigger.Phase2L1GT.l1tGTAlgoBlockProducer_cff')
@@ -123,29 +123,36 @@ process.FEVTDEBUGHLToutput.outputCommands.append('keep *P2GT*_*_*_*')
 process.FEVTDEBUGHLToutput.outputCommands.append('drop l1tPFJets_*_*_*')
 
 ### Fix GT producer with new vertex name
-import FWCore.ParameterSet.Config as cms
-from L1Trigger.Phase2L1GT.l1tGTScales import scale_parameter
+# import FWCore.ParameterSet.Config as cms
+# from L1Trigger.Phase2L1GT.l1tGTScales import scale_parameter
 
-process.l1tGTProducer = cms.EDProducer(
-    "L1GTProducer",
-    scales=scale_parameter,
-    GTTPromptJets = cms.InputTag("l1tTrackJetsEmulation", "L1TrackJets"),
-    GTTDisplacedJets = cms.InputTag("l1tTrackJetsExtendedEmulation", "L1TrackJetsExtended"),
-    GTTPrimaryVert = cms.InputTag("l1tVertexFinderEmulator", "L1VerticesEmulation"),
-    GMTSaPromptMuons = cms.InputTag("l1tSAMuonsGmt", "promptSAMuons"),
-    GMTSaDisplacedMuons = cms.InputTag("l1tSAMuonsGmt", "displacedSAMuons"),
-    GMTTkMuons = cms.InputTag("l1tTkMuonsGmtLowPtFix", "l1tTkMuonsGmtLowPtFix"),
-    CL2Jets = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulator"),
-    CL2Electrons = cms.InputTag("l1tLayer2EG", "L1CtTkElectron"),
-    CL2Photons = cms.InputTag("l1tLayer2EG", "L1CtTkEm"),
-    CL2Taus = cms.InputTag("l1tNNTauProducerPuppi", "L1PFTausNN"),
-    CL2EtSum = cms.InputTag("l1tMETPFProducer"),
-    CL2HtSum = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT")
-)
+# process.l1tGTProducer = cms.EDProducer(
+#     "L1GTProducer",
+#     scales=scale_parameter,
+#     GTTPromptJets = cms.InputTag("l1tTrackJetsEmulation", "L1TrackJets"),
+#     GTTDisplacedJets = cms.InputTag("l1tTrackJetsExtendedEmulation", "L1TrackJetsExtended"),
+#     GTTPrimaryVert = cms.InputTag("l1tVertexFinderEmulator", "L1VerticesEmulation"),
+#     GMTSaPromptMuons = cms.InputTag("l1tSAMuonsGmt", "promptSAMuons"),
+#     GMTSaDisplacedMuons = cms.InputTag("l1tSAMuonsGmt", "displacedSAMuons"),
+#     GMTTkMuons = cms.InputTag("l1tTkMuonsGmtLowPtFix", "l1tTkMuonsGmtLowPtFix"),
+#     CL2Jets = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulator"),
+#     CL2Electrons = cms.InputTag("l1tLayer2EG", "L1CtTkElectron"),
+#     CL2Photons = cms.InputTag("l1tLayer2EG", "L1CtTkEm"),
+#     CL2Taus = cms.InputTag("l1tNNTauProducerPuppi", "L1PFTausNN"),
+#     CL2EtSum = cms.InputTag("l1tMETPFProducer"),
+#     CL2HtSum = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT")
+# )
+
+# process.l1tGTProducerFix = process.l1tGTProducer.clone(
+#     GTTPrimaryVert = cms.InputTag("l1tVertexFinderEmulator", "L1VerticesEmulation"),
+# )
+
+process.l1tGTProducer.GTTPrimaryVert = cms.InputTag("l1tVertexFinderEmulator", "L1VerticesEmulation")
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
 process.Phase2L1GTProducer = cms.Path(process.l1tGTProducer)
+# process.Phase2L1GTProducer = cms.Path(process.l1tGTProducerFix)
 process.pPuppiHT400 = cms.Path(process.PuppiHT400)
 process.pPuppiHT450 = cms.Path(process.PuppiHT450)
 process.pPuppiMET200 = cms.Path(process.PuppiMET200)
@@ -189,7 +196,7 @@ process.pGToutput = cms.EndPath(process.GToutput)
 process.load('PhysicsTools.L1Nano.l1Ph2Nano_cff')
 
 process.outnano = cms.OutputModule("NanoAODOutputModule",
-                                   fileName = cms.untracked.string("perfNano_Ph2Menu.root"),
+                                   fileName = cms.untracked.string("L1Ph2Nano.root"),
                                    outputCommands = cms.untracked.vstring("drop *", "keep nanoaodFlatTable_*Table_*_*"),
                                    compressionLevel = cms.untracked.int32(4),
                                    compressionAlgorithm = cms.untracked.string("ZLIB"),
