@@ -358,6 +358,15 @@ scJetTable = cms.EDProducer(
     )
 )
 
+scExtJetTable = scJetTable.clone(
+    src = cms.InputTag('l1tSCPFL1PuppiExtendedCorrectedEmulator'),
+    name = cms.string("L1scExtJet"),
+    doc = cms.string("SeededCone 0.4 Puppi jet from extended Puppi"),
+    externalVariables = cms.PSet(
+        btagScore = ExtVar(cms.InputTag("l1tBJetProducerPuppiCorrectedEmulator", "L1PFBJets"),float, doc="NNBtag score"),
+    ),
+)
+
 histoJetTable = scJetTable.clone(
     src = cms.InputTag("l1tPhase1JetCalibrator9x9trimmed" ,   "Phase1L1TJetFromPfCandidates"),
     name = cms.string("L1histoJet"),
@@ -469,6 +478,7 @@ p2L1TablesTask = cms.Task(
     staEGebTable, staEGeeTable,
     # ## jets
     scJetTable,
+    scExtJetTable, 
     histoJetTable,
     caloJetTable,
     # ## sums
