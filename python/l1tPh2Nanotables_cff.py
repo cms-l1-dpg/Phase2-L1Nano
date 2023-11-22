@@ -12,7 +12,66 @@ vtxTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         z0 = Var("z0()",float, doc = "primary vertex position z coordinate"),
-        sumPt = Var("pt()",float, doc = "sum pt of tracks")
+        sumPt = Var("pt()",float, doc = "sum pt of tracks"),
+        hwValid = Var("validBits()",bool, doc = "hardware vertex valid bit"),
+        hwZ0 = Var("z0Bits()",int, doc = "hardware z0 vertex position"),
+        # hwNTracksIn = Var("multiplicityBits()",int, doc = "hardware track multiplicity in the vertex"), # Currently not filled in emulation or firmware
+        hwPt = Var("ptBits()",int,doc="hardware pt"), # This value seems to be essentially (uint)pt(), but there should be 2 float bits (0.25GeV granularity) represented here... is to_uint() truncating the float bits?
+        # hwQual = Var("qualityBits()",int,doc="hardware qual"), # Currently not filled in emulation or firmware
+        # hwNTracksOut = Var("inverseMultiplicityBits()",int, doc = "hardware track multiplicity out of the vertex"), # Currently not filled in emulation or firmware
+     )
+ )
+
+gttTrackJetsTable = cms.EDProducer(
+    "SimpleL1TkJetWordCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tTrackJetsEmulation","L1TrackJets"),
+    name = cms.string("L1TrackJet"),
+    doc = cms.string("GTT Track Jets"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        pt = Var("pt()", float, doc="pt"),
+        eta = Var("glbeta()", float, doc="eta"),
+        phi = Var("glbphi()", float, doc="phi"),
+        z0 = Var("z0()", float, doc="z0"), #Jet z0 is now always 0, however?
+        hwPt = Var("ptBits()", int, doc="hardware pt"),
+        hwEta = Var("glbPhiBits()", int, doc="hardware eta"),
+        hwPhi = Var("glbEtaBits()", int, doc="hardware eta"),
+        hwZ0 = Var("z0Bits()", int, doc="hardware z0"), #Jet z0 is now always 0, however?
+        hwNTracks = Var("ntBits()", int, doc="hardware number of tracks"),
+        hwNDisplacedTracks = Var("ntBits()", int, doc="hardware number of tracks"),
+    )
+)
+
+gttEtSumTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tTrackerEmuEtMiss", "L1TrackerEmuEtMiss"),
+    name = cms.string("L1TrackMET"),
+    doc = cms.string("GTT Track MET"),
+    singleton = cms.bool(True), # the number of entries is variable
+    variables = cms.PSet(
+        # pt = Var("pt", float, doc="MET pt"),
+        # phi = Var("phi", float, doc="MET phi"),
+        # hwValid = Var("hwQual() > 0",int, doc = "hardware Missing Et valid bit"),
+        hwValid = Var("hwQual()",bool, doc = "hardware Missing Et valid bit"),
+        # hwVectorSumPt = Var("Et().range()", int, doc = "hardware Missing Et vector sum"),
+        hwPhi = Var("hwPhi", int, doc = "hardware Missing Et phi"),
+    )
+)
+
+gttHtSumTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tTrackerEmuHTMiss", "L1TrackerEmuHTMiss"),
+    name = cms.string("L1TrackHT"),
+    doc = cms.string("GTT Track Missing HT"),
+    singleton = cms.bool(True), # the number of entries is variable
+    variables = cms.PSet(
+        hwValid = Var("hwQual()",bool, doc = "hardware Track MHT valid bit"),
+        hwPhi = Var("hwPhi()", int, doc = "hardware Track MHT phi"),
+        hwPt = Var("hwPt()", int, doc = "hardware Track HT"),
+        # mht = Var("pt", float, doc="MHT pt"),
+        # mhtPhi = Var("phi", float, doc="MHT phi"),
+        ht = Var(f"p4().energy()", float, doc="HT"),
     )
 )
 
