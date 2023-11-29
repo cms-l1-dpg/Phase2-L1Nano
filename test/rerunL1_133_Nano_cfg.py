@@ -148,7 +148,14 @@ process.GToutput = cms.OutputModule(
 process.pGToutput = cms.EndPath(process.GToutput)
 
 ## NANO
-process.load('PhysicsTools.L1Nano.l1Ph2Nano_cff')
+## from cmsDriver:  --no_exec -s USER:PhysicsTools/L1Nano/l1tPh2Nano_cff.l1tPh2NanoTask --customise PhysicsTools/L1Nano/l1tPh2Nano_cff.addFullPh2L1Nano
+# Automatic addition of the customisation function from PhysicsTools.L1Nano.l1tPh2Nano_cff
+process.load('PhysicsTools.L1Nano.l1tPh2Nano_cff')
+from PhysicsTools.L1Nano.l1tPh2Nano_cff import addFullPh2L1Nano 
+#call to customisation function addFullPh2L1Nano imported from PhysicsTools.L1Nano.l1tPh2Nano_cff
+process = addFullPh2L1Nano(process)
+
+process.l1nano_step = cms.Path(process.l1tPh2NanoTask)
 
 process.outnano = cms.OutputModule("NanoAODOutputModule",
                                    fileName = cms.untracked.string("L1Ph2Nano.root"),
@@ -165,12 +172,11 @@ process.schedule = cms.Schedule(
     process.GTemulation_step, *collectAlgorithmPaths(process),
     ## GT ntuple
     # process.pGToutput,
+    ## nano step
+    process.l1nano_step, 
     process.endjob_step,
     # process.FEVTDEBUGHLToutput_step,
     process.end,
-    tasks = [
-        process.p2L1TablesTask
-    ],
 )
 
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
@@ -203,9 +209,6 @@ from L1Trigger.Configuration.customisePhase2FEVTDEBUGHLT import customisePhase2F
 process = customisePhase2FEVTDEBUGHLT(process)
 
 # End of customisation functions
-
-
-# Customisation from command line
 
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
