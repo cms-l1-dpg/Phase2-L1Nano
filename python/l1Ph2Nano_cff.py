@@ -120,30 +120,25 @@ gtTkPhoTable =cms.EDProducer(
     )
 )
 
+## GT tkElectrons
 gtTkEleTable = gtTkPhoTable.clone(
     src = cms.InputTag('l1tGTProducer','CL2Electrons'),
     name = cms.string("L1GTtkElectron"),
     doc = cms.string("GT tkElectrons"),
 )
 
-### FIXME
-# gtTkEleTable.variables.z0 = Var("vz",float) ## this is the correct line
-gtTkEleTable.variables.z0 = Var("vz / 2.",float) ### FIXME -> change done due to ap_fix type mismatch
-### FIXME
-
+gtTkEleTable.variables.z0 = Var("vz",float)
 gtTkEleTable.variables.charge = Var("charge", int, doc="charge id")
 gtTkEleTable.variables.hwZ0 = Var("hwZ0_toInt()",int)
 
+## GT gmtTkMuons
 gtTkMuTable = gtTkEleTable.clone(
     src = cms.InputTag('l1tGTProducer','GMTTkMuons'),
     name = cms.string("L1GTgmtTkMuon"),
     doc = cms.string("GT GMT tkMuon"),
 )
-gtTkMuTable.variables.z0 = Var("vz",float)
-# ### FIXME GMT uses the opposite definition of charge than GT and CTL2
-gtTkMuTable.variables.charge = Var("-charge", int, doc="charge id")
-# ### FIXME
 
+## GT seededCone puppi Jets
 gtSCJetsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Jets'),
@@ -166,11 +161,7 @@ gtNNTauTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
-        #z0 = Var(f"hwSeed_z0_toInt()*{scale_parameter.seed_z0_lsb.value()}",float, doc = "z0"),
-        ### FIXME
-        ### MANUAL HACK to fix the GT tau z0 scale and also the factor 2 due to wrong ap_type -> FIXME
-        z0 = Var("hwSeed_z0_toInt() * (1/40.)",float, doc = "z0"),
-        ### FIXME
+        z0 = Var(f"hwSeed_z0_toInt()*{scale_parameter.seed_z0_lsb.value()}",float, doc = "z0"),
         hwZ0 = Var(f"hwSeed_z0_toInt()",int, doc = "hwZ0"),
     )
 )
@@ -212,17 +203,15 @@ tkPhotonTable = cms.EDProducer(
     variables = cms.PSet(
         l1ObjVars,
         charge = Var("charge", int, doc="charge"),
-        ## FIXME GT uses the PV iso in 133pre2
-        relIso = Var("trkIsolPV", float, doc = "relative Isolation"),
-        ## FIXME
-        tkIso   = Var("trkIsol", float),
-        tkIsoPV  = Var("trkIsolPV", float),
-        pfIso   = Var("pfIsol", float),
-        puppiIso  = Var("puppiIsol", float),
+        relIso = Var("trkIsol", float, doc = "relative Isolation based on trkIsol variable"),
+        # tkIso   = Var("trkIsol", float), ## use above instead to be consistent with the GT and with the tkEle
+        # tkIsoPV  = Var("trkIsolPV", float),
+        # pfIso   = Var("pfIsol", float),
+        # puppiIso  = Var("puppiIsol", float),
         ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio
-        saId  = Var("test_bit(hwQual(),0)", bool),
-        eleId = Var("test_bit(hwQual(),1)", bool),
-        phoId = Var("test_bit(hwQual(),2)", bool),
+        saId  = Var("test_bit(hwQual(),0)", bool, doc = "standalone ID, bit 0 of hwQual"),
+        eleId = Var("test_bit(hwQual(),1)", bool, doc = "electron ID, bit 1 of hwQual"),
+        phoId = Var("test_bit(hwQual(),2)", bool, doc = "photon ID, bit 2 of hwQual"),
     )
 )
 
@@ -233,19 +222,11 @@ tkEleTable = tkPhotonTable.clone(
 )
 tkEleTable.variables.z0     = Var("trkzVtx", float, "track vertex z0")
 tkEleTable.variables.charge = Var("charge", int, doc="charge")
-tkEleTable.variables.relIso = Var("trkIsol", float, doc = "relative Isolation") ### FIXME overwriting the relIso variable for now as the GT photon uses the wrong one
-
+## additional variables that are not used in the menu/GT
 ## from https://github.com/p2l1pfp/FastPUPPI/blob/12_5_X/NtupleProducer/python/runPerformanceNTuple.py#L499C8-L501C83
-tkEleTable.variables.tkEta = Var("trkPtr.eta", float,precision=8)
-tkEleTable.variables.tkPhi = Var("trkPtr.phi", float,precision=8)
-tkEleTable.variables.tkPt = Var("trkPtr.momentum.perp", float,precision=8)
-
-# tkEleTable.variables.charge3 = Var("charge()", int, doc="charge")
-# tkEleTable.variables.charge0 = Var("? trackCurvature() > 0 ? 1 : -1", int, doc="charge")
-# tkEleTable.variables.charge1 = Var("? trackCurvature() ? 1 : -1", int, doc="charge")
-# tkEleTable.variables.charge2 = Var("pow(-1,trackCurvature())", int, doc="charge2")
-# tkEleTable.variables.trackCurvature = Var("trackCurvature()", int, doc="trackCurvature")
-# tkEleTable.variables.trackCurvature2 = Var("trackCurvature", int, doc="trackCurvature")
+# tkEleTable.variables.tkEta = Var("trkPtr.eta", float,precision=8)
+# tkEleTable.variables.tkPhi = Var("trkPtr.phi", float,precision=8)
+# tkEleTable.variables.tkPt = Var("trkPtr.momentum.perp", float,precision=8)
 
 # merge EG
 staEGmerged = cms.EDProducer("CandViewMerger",
@@ -261,7 +242,6 @@ staEGmerged = cms.EDProducer("CandViewMerger",
 #     doc = cms.string("standalone EG merged endcap and barrel"),
 #     variables = cms.PSet(
 #         l1P3Vars,
-
 #     )
 # )
 
@@ -274,7 +254,6 @@ staEGTable = cms.EDProducer(
     # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
-
         ### FIXME
         ### NOTE THE BELOW DOES NOT WORK FOR NOW
         ### This only works when using each collection barrel/endcap separately with the SimpleTriggerL1EGFlatTableProducer -> Need to fix this !
@@ -295,14 +274,13 @@ staEGebTable = cms.EDProducer(
     # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
-
         ### FIXME
         ### This only works when using each collection barrel/endcap separately with the SimpleTriggerL1EGFlatTableProducer -> Need to fix this !
         hwQual = Var("hwQual",int,doc="hardware qual"),
         # quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio
-        saId  = Var("test_bit(hwQual(),0)", bool),
-        eleId = Var("test_bit(hwQual(),1)", bool),
-        phoId = Var("test_bit(hwQual(),2)", bool),
+        saId  = Var("test_bit(hwQual(),0)", bool, doc = "standalone ID, bit 0 of hwQual"),
+        eleId = Var("test_bit(hwQual(),1)", bool, doc = "electron ID, bit 1 of hwQual"),
+        phoId = Var("test_bit(hwQual(),2)", bool, doc = "photon ID, bit 2 of hwQual"),
     )
 )
 
