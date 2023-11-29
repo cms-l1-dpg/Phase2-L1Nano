@@ -11,27 +11,27 @@ from L1Trigger.Phase2L1GT.l1tGTScales import scale_parameter
 
 ##################################################################
 ### This part can be taken from l1trig_cff starting from 13X
-## from PhysicsTools.NanoAOD.l1trig_cff import *
+from PhysicsTools.NanoAOD.l1trig_cff import *
 
-l1_float_precision_=16
+# l1_float_precision_=16
 
-l1PtVars = cms.PSet(
-    pt  = Var("pt",  float, precision=l1_float_precision_),
-    phi = Var("phi", float, precision=l1_float_precision_),
-)
-l1P3Vars = cms.PSet(
-    l1PtVars,
-    eta = Var("eta", float, precision=l1_float_precision_),
-)
+# l1PtVars = cms.PSet(
+#     pt  = Var("pt",  float, precision=l1_float_precision_),
+#     phi = Var("phi", float, precision=l1_float_precision_),
+# )
+# l1P3Vars = cms.PSet(
+#     l1PtVars,
+#     eta = Var("eta", float, precision=l1_float_precision_),
+# )
 
-l1ObjVars = cms.PSet(
-    l1P3Vars,
-    hwPt = Var("hwPt()",int,doc="hardware pt"),
-    hwEta = Var("hwEta()",int,doc="hardware eta"),
-    hwPhi = Var("hwPhi()",int,doc="hardware phi"),
-    hwQual = Var("hwQual()",int,doc="hardware qual"),
-    hwIso = Var("hwIso()",int,doc="hardware iso")
-)
+# l1ObjVars = cms.PSet(
+#     l1P3Vars,
+#     hwPt = Var("hwPt()",int,doc="hardware pt"),
+#     hwEta = Var("hwEta()",int,doc="hardware eta"),
+#     hwPhi = Var("hwPhi()",int,doc="hardware phi"),
+#     hwQual = Var("hwQual()",int,doc="hardware qual"),
+#     hwIso = Var("hwIso()",int,doc="hardware iso")
+# )
 
 l1GTObjVars = cms.PSet(
     l1P3Vars,
@@ -40,6 +40,19 @@ l1GTObjVars = cms.PSet(
 ##################################################################
 
 ### Tables definitions
+gtAlgoTable = cms.EDProducer(
+    "P2GTAlgoBlockFlatTableProducer",
+    src = cms.InputTag('l1tGTAlgoBlockProducer'),
+    cut = cms.string(""),
+    name = cms.string("L1GT"),
+    doc = cms.string("GT Algo Block decisions"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        # name = Var("algoName",string, doc = "algo name"), # does not work
+        final = Var("decisionFinal",float, doc = "final decision"),
+        initial = Var("decisionBeforeBxMaskAndPrescale",float, doc = "initial decision"),
+    )
+)
 
 ### Vertex
 
@@ -455,6 +468,7 @@ nnTauTable = cms.EDProducer(
 
 ## GT objects
 p2GTL1TablesTask = cms.Task(
+    gtAlgoTable,
     gtTkPhoTable,
     gtTkEleTable,
     gtTkMuTable,
