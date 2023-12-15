@@ -359,4 +359,7 @@ p2L1TablesTask = cms.Task(
     # GTT
     vtxTable,
     pvtxTable,
+    gttTrackJetsTable,
+    gttEtSumTable,
+    gttHtSumTable,
 )
