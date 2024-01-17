@@ -49,26 +49,6 @@ gtPvTable = gtVtxTable.clone(
     maxLen = cms.uint32(1),
 )
 
-vtxTable = cms.EDProducer(
-    "SimpleL1VtxWordCandidateFlatTableProducer", ## note the use of a dedicated table producer which is defined in the plugins/L1TableProducer.cc
-    src = cms.InputTag('l1tVertexFinderEmulator','L1VerticesEmulation'),
-    cut = cms.string(""),
-    name = cms.string("L1Vertex"),
-    doc = cms.string("GTT Vertices"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        z0 = Var("z0()",float, doc = "primary vertex position z coordinate"),
-        sumPt = Var("pt()",float, doc = "sum pt of tracks")
-    )
-)
-
-### Store Primary Vertex only (first vertex)
-pvtxTable = vtxTable.clone(
-    maxLen = cms.uint32(1),
-    name = cms.string("L1PV"),
-    doc = cms.string("GTT Leading Primary Vertex"),
-)
-
 ### GT
 gtTkPhoTable =cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
