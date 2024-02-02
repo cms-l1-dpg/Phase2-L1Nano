@@ -37,7 +37,7 @@ gtVtxTable = cms.EDProducer(
         z0 = Var("vz",float, doc = "primary vertex position z coordinate"),
         # sumPt = Var("hwSum_pT_pv_toInt()*0.25",float, doc = "sum pt of tracks"),
         ## hw vars
-        hwZ0 = Var("hwZ0_toInt()",int, doc = "HW primary vertex position z coordinate"),
+#        hwZ0 = Var("hwZ0_toInt()",int, doc = "HW primary vertex position z coordinate"),
         # hwSum_pT_pv = Var("hwSum_pT_pv_toInt()",int, doc = "HW sum pt of tracks"),
     )
 )
@@ -61,12 +61,12 @@ gtTkPhoTable =cms.EDProducer(
         l1GTObjVars,
         ## hw values
         # hwPt = Var("hwPT_toInt()",int,doc="hardware pt"),
-        hwQual = Var("hwQual_toInt()",int),
-        hwIso = Var("hwIso_toInt()",int),
+#        hwQual = Var("hwQual_toInt()",int),
+#        hwIso = Var("hwIso_toInt()",int),
         ## more physical values
         ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        iso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()}",float, doc = "absolute isolation"),
-        relIso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()} / pt",float, doc = "relative isolation")
+        # iso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()}",float, doc = "absolute isolation"),
+        # relIso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()} / pt",float, doc = "relative isolation")
     )
 )
 
@@ -79,7 +79,7 @@ gtTkEleTable = gtTkPhoTable.clone(
 
 gtTkEleTable.variables.z0 = Var("vz",float)
 gtTkEleTable.variables.charge = Var("charge", int, doc="charge id")
-gtTkEleTable.variables.hwZ0 = Var("hwZ0_toInt()",int)
+# gtTkEleTable.variables.hwZ0 = Var("hwZ0_toInt()",int)
 
 ## GT gmtTkMuons
 gtTkMuTable = gtTkEleTable.clone(
@@ -111,8 +111,8 @@ gtNNTauTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
-        z0 = Var(f"hwSeed_z0_toInt()*{scale_parameter.seed_z0_lsb.value()}",float, doc = "z0"),
-        hwZ0 = Var(f"hwSeed_z0_toInt()",int, doc = "hwZ0"),
+        # z0 = Var(f"hwSeed_z0_toInt()*{scale_parameter.seed_z0_lsb.value()}",float, doc = "z0"),
+#        hwZ0 = Var(f"hwSeed_z0_toInt()",int, doc = "hwZ0"),
     )
 )
 
@@ -138,7 +138,7 @@ gtHtSumTable = cms.EDProducer(
         # l1GTObjVars,
         mht = Var("pt", float, doc="MHT pt"),
         mhtPhi = Var("phi", float, doc="MHT phi"),
-        ht = Var(f"hwSca_sum_toInt()*{scale_parameter.sca_sum_lsb.value()}", float, doc="HT"), ## HACK via hw value!
+        # ht = Var(f"hwSca_sum_toInt()*{scale_parameter.sca_sum_lsb.value()}", float, doc="HT"), ## HACK via hw value!
     )
 )
 
