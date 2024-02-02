@@ -58,8 +58,6 @@ def addGenObjects(process):
 
     return process
 
-### AllGen
-
 def addFullPh2L1Nano(process):
     addGenObjects(process)
     addPh2L1Objects(process)
@@ -67,3 +65,27 @@ def addFullPh2L1Nano(process):
 
     return process
 
+
+def customise_L1Nano_13xContent(process):
+    ## use old vertex collection
+    process.vtxTable.src = cms.InputTag('l1tVertexFinderEmulator','l1verticesEmulation')
+    process.pvtxTable.src = cms.InputTag('l1tVertexFinderEmulator','l1verticesEmulation')
+    # use old muon collection
+    process.gmtTkMuTable.src = cms.InputTag('l1tTkMuonsGmt','')
+    # remove old barrel EG collection
+    # process.staEGmerged.src = cms.VInputTag(
+    #     cms.InputTag('l1tEGammaClusterEmuProducer',''),
+    #     cms.InputTag('l1tLayer2EG','L1CtEgEE')
+    #     )
+    process.p2L1TablesTask.remove(process.staEGmerged)
+    process.p2L1TablesTask.remove(process.staEGTable)
+    # process.staEGebTable.src = cms.InputTag('l1tEGammaClusterEmuProducer','')
+    process.p2L1TablesTask.remove(process.staEGebTable)
+    ## remove extended puppi jets
+    process.p2L1TablesTask.remove(process.scExtJetTable)
+    process.l1tPh2NanoTask.remove(process.p2GTL1TablesTask)
+    ## keep L1PF jets
+    process.p2L1TablesTask.remove(process.scJetTable)
+    # process.source.inputCommands = cms.untracked.vstring('keep *')
+
+# customise_L1Nano_13xContent(process)
