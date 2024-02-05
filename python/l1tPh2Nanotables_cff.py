@@ -168,7 +168,7 @@ gmtTkMuTable = staMuTable.clone(
 ### Jets
 scJetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag('l1tSCPFL1PuppiCorrectedEmulator'),
+    src = cms.InputTag('l1tSC4PFL1PuppiCorrectedEmulator'),
     cut = cms.string(""),
     name = cms.string("L1scJet"),
     doc = cms.string("SeededCone 0.4 Puppi jet"),
@@ -181,7 +181,7 @@ scJetTable = cms.EDProducer(
 )
 
 scExtJetTable = scJetTable.clone(
-    src = cms.InputTag('l1tSCPFL1PuppiExtendedCorrectedEmulator'),
+    src = cms.InputTag('l1tSC4PFL1PuppiExtendedCorrectedEmulator'),
     name = cms.string("L1scExtJet"),
     doc = cms.string("SeededCone 0.4 Puppi jet from extended Puppi"),
     externalVariables = cms.PSet(
@@ -218,7 +218,7 @@ puppiMetTable = cms.EDProducer(
 
 seededConeSumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag("l1tSCPFL1PuppiCorrectedEmulatorMHT",""),
+    src = cms.InputTag("l1tSC4PFL1PuppiCorrectedEmulatorMHT",""),
     name = cms.string("L1scJetSum"),
     doc = cms.string("HT and MHT from SeededCone jets; idx 0 is HT, idx 1 is MHT"),
     singleton = cms.bool(False), # the number of entries is variable
