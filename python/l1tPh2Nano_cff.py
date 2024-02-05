@@ -24,6 +24,29 @@ from PhysicsTools.NanoAOD.met_cff import metMCTable ## for GenMET
 from PhysicsTools.NanoAOD.globals_cff import puTable ## for PU
 from PhysicsTools.NanoAOD.taus_cff import * ## for Gen taus
 def addGenObjects(process):
+
+    ## add pruned gen particles a la Mini
+    if True: 
+        ## Gen all 
+        # genParticleTable.src = "genParticles" # see 
+        ## Mini default, see  https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/PatAlgos/python/slimming/prunedGenParticles_cfi.py
+        # genParticleTable.src = "prunedGenParticles"
+        ## Nano default, see https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/genparticles_cff.py#L8
+        # genParticleTable.src = "finalGenParticles" 
+
+        process.prunedGenParticleTable = genParticleTable.clone()
+        process.prunedGenParticleTable.src = "prunedGenParticles"
+        process.prunedGenParticleTable.name = "prunedGenPart"
+        process.l1tPh2NanoTask.add(process.prunedGenParticleTable)
+
+
+    ## add more GenVariables
+    # from L1Ntuple Gen: https://github.com/artlbv/cmssw/blob/94a5ec13b8ce76afb8ea4f157bb92fb547fadee2/L1Trigger/L1TNtuples/plugins/L1GenTreeProducer.cc#L203
+    genParticleTable.variables.vertX = Var("vertex.x", float, "vertex X")
+    genParticleTable.variables.vertY = Var("vertex.y", float, "vertex Y")
+    genParticleTable.variables.lXY = Var("sqrt(vertex().x() * vertex().x() + vertex().y() * vertex().y())", float, "lXY")
+    genParticleTable.variables.dXY = Var("-vertex().x() * sin(phi()) + vertex().y() * cos(phi())", float, "dXY")
+
     process.l1tPh2NanoTask.add(
                 puTable, metMCTable,
                 genParticleTask, genParticleTablesTask,
