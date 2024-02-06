@@ -33,7 +33,6 @@ tkPhotonTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1ObjVars,
-        charge = Var("charge", int, doc="charge"),
         relIso = Var("trkIsol", float, doc = "relative Isolation based on trkIsol variable"),
         # tkIso   = Var("trkIsol", float), ## use above instead to be consistent with the GT and with the tkEle
         # tkIsoPV  = Var("trkIsolPV", float),
@@ -126,8 +125,8 @@ staEGeeTable =  staEGebTable.clone(
 staMuTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tSAMuonsGmt','promptSAMuons'),
-    name = cms.string("L1StaMu"),
-    doc = cms.string("GMT STA Muons"),
+    name = cms.string("L1gmtMuon"),
+    doc = cms.string("GMT standalone Muons"),
     cut = cms.string(""),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -166,12 +165,12 @@ gmtTkMuTable = staMuTable.clone(
 # gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
 
 ### Jets
-scJetTable = cms.EDProducer(
+sc4JetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tSC4PFL1PuppiCorrectedEmulator'),
     cut = cms.string(""),
-    name = cms.string("L1scJet"),
-    doc = cms.string("SeededCone 0.4 Puppi jet"),
+    name = cms.string("L1puppiJetSC4"),
+    doc = cms.string("SeededCone 0.4 Puppi jet,  origin: Correlator"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
@@ -180,26 +179,32 @@ scJetTable = cms.EDProducer(
     )
 )
 
-scExtJetTable = scJetTable.clone(
+sc8JetTable = sc4JetTable.clone(
+    src = 'l1tSC8PFL1PuppiCorrectedEmulator',
+    name = "L1puppiJetSC8",
+    doc = "SeededCone 0.8 Puppi jet,  origin: Correlator"
+)
+
+sc4ExtJetTable = sc4JetTable.clone(
     src = cms.InputTag('l1tSC4PFL1PuppiExtendedCorrectedEmulator'),
-    name = cms.string("L1scExtJet"),
-    doc = cms.string("SeededCone 0.4 Puppi jet from extended Puppi"),
+    name = cms.string("L1puppiExtJetSC4"),
+    doc = cms.string("SeededCone 0.4 Puppi jet from extended Puppi,  origin: Correlator"),
     externalVariables = cms.PSet(
         btagScore = ExtVar(cms.InputTag("l1tBJetProducerPuppiCorrectedEmulator", "L1PFBJets"),float, doc="NNBtag score"),
     ),
 )
 
-histoJetTable = scJetTable.clone(
+histoJetTable = sc4JetTable.clone(
     src = cms.InputTag("l1tPhase1JetCalibrator9x9trimmed" ,   "Phase1L1TJetFromPfCandidates"),
-    name = cms.string("L1histoJet"),
-    doc = cms.string("Puppi Jets 9x9"),
+    name = cms.string("L1puppiJetHisto"),
+    doc = cms.string("Puppi Jets histogrammed 9x9, trimmed, origin: Correlator"),
 )
 
 
-caloJetTable = scJetTable.clone(
+caloJetTable = sc4JetTable.clone(
     src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
     name = cms.string("L1caloJet"),
-    doc = cms.string("Calo Jets"),
+    doc = cms.string("Calo Jets, origin: GCT"),
     cut = cms.string("pt > 30"), ## increase this to save space
 )
 
@@ -209,19 +214,20 @@ puppiMetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tMETPFProducer",""),
     name = cms.string("L1puppiMET"),
-    doc = cms.string("Puppi MET"),
+    doc = cms.string("Puppi MET, origin: Correlator"),
+    singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         l1PtVars,
         et = Var("et",float)
     )
 )
 
-seededConeSumsTable = cms.EDProducer(
+sc4SumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tSC4PFL1PuppiCorrectedEmulatorMHT",""),
-    name = cms.string("L1scJetSum"),
-    doc = cms.string("HT and MHT from SeededCone jets; idx 0 is HT, idx 1 is MHT"),
-    singleton = cms.bool(False), # the number of entries is variable
+    name = cms.string("L1puppiJetSC4sums"),
+    doc = cms.string("HT and MHT from SeededCone Radius 0.8 jets; idx 0 is HT, idx 1 is MHT, origin: Correlator"),
+    singleton = cms.bool(False), # the number of entries is not variable
     cut = cms.string(""),
     variables = cms.PSet(
         l1PtVars,
@@ -229,10 +235,10 @@ seededConeSumsTable = cms.EDProducer(
     )
 )
 
-histoSumsTable = seededConeSumsTable.clone(
+histoSumsTable = sc4SumsTable.clone(
     src = cms.InputTag("l1tPhase1JetSumsProducer9x9trimmed","Sums"),
-    name = cms.string("L1histoHTMHT"),
-    doc = cms.string("HT and MHT from histogrammed jets"),
+    name = cms.string("L1puppiHistoJetSums"),
+    doc = cms.string("HT and MHT from histogrammed 9x9 jets, origin: Correlator"),
     )
 
 
@@ -286,13 +292,14 @@ p2L1TablesTask = cms.Task(
     staEGmerged, staEGTable, ## Need to run merger before Table task! Stanalone EG – not in GT yet
     staEGebTable, staEGeeTable,
     # ## jets
-    scJetTable,
-    scExtJetTable, 
+    sc4JetTable,
+    sc8JetTable,
+    sc4ExtJetTable, 
     histoJetTable,
     caloJetTable,
     # ## sums
     puppiMetTable,
-    seededConeSumsTable,
+    sc4SumsTable,
     histoSumsTable,
     # taus
     caloTauTable,
