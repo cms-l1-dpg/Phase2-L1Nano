@@ -49,9 +49,13 @@ def addGenObjects(process):
     process.l1tPh2NanoTask.add(
                 puTable, metMCTable,
                 genParticleTask, genParticleTablesTask,
-                genJetTable, patJetPartonsNano,genJetFlavourAssociation, genJetFlavourTable,
                 genTauTask,
     )
+    
+    # add all GenJets: AK4 and AK8
+    process.l1tPh2NanoTask.add(genJetTable,patJetPartonsNano,genJetFlavourTable)
+    process.l1tPh2NanoTask.add(genJetAK8Table,genJetAK8FlavourAssociation,genJetAK8FlavourTable)
+
     return process
 
 def addFullPh2L1Nano(process):
