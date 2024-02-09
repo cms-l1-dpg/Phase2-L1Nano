@@ -202,7 +202,7 @@ histoJetTable = sc4JetTable.clone(
 
 
 caloJetTable = sc4JetTable.clone(
-    src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
+    src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
     name = cms.string("L1caloJet"),
     doc = cms.string("Calo Jets, origin: GCT"),
     cut = cms.string("pt > 30"), ## increase this to save space
@@ -245,13 +245,31 @@ histoSumsTable = sc4SumsTable.clone(
 ### Taus
 caloTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag("l1tCaloJet","L1CaloTauCollectionBXV"),
+    src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
     cut = cms.string("pt > 20"),
     name = cms.string("L1caloTau"),
     doc = cms.string("Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
+        et  = Var("tauEt",  float, precision=l1_float_precision_),
+        phi = Var("phi", float, precision=l1_float_precision_),
+        eta = Var("eta", float, precision=l1_float_precision_),
+    )
+)
+
+
+
+nnCaloTauTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tNNCaloTauEmulator","L1NNCaloTauCollectionBXV"),
+    cut = cms.string("pt > 20"),
+    name = cms.string("L1nnCaloTau"),
+    doc = cms.string("NN Calo Taus"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
         l1P3Vars,
+        hwQual = Var("hwQual",int,doc="Tau ID working point, 90% --> 3, 95% --> 2, 99% --> 1, anything else --> 0"),
+        hwIso = Var("hwIso",int,doc="Tau ID * 10E4")
     )
 )
 
@@ -281,6 +299,18 @@ nnTauTable = cms.EDProducer(
     )
 )
 
+hpsTauTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1HPSPFTauEmuProducer","HPSTaus"),
+    cut = cms.string(""),
+    name = cms.string("L1hpsTau"),
+    doc = cms.string("HPS Taus"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1P3Vars
+    )
+)
+
 ## L1 Objects
 p2L1TablesTask = cms.Task(
     ## Muons
@@ -303,7 +333,9 @@ p2L1TablesTask = cms.Task(
     histoSumsTable,
     # taus
     caloTauTable,
+    nnCaloTauTable,
     nnTauTable,
+    hpsTauTable,
     # GTT
     vtxTable,
     pvtxTable,
