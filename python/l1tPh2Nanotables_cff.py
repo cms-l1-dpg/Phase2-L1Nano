@@ -285,8 +285,8 @@ nnTauTable = cms.EDProducer(
         charge = Var("charge", int),
         z0 = Var("z0", float, "vertex z0"),                
         ## copy paste from old menu ntuple https://github.com/artlbv/cmssw/blob/from-CMSSW_12_5_2_patch1/L1Trigger/L1TNtuples/src/L1AnalysisPhaseIIStep1.cc#L543C1-L555C1
-        chargedIso = Var("chargedIso", int),
-        fullIso = Var("fullIso", int),
+        chargedIso = Var("chargedIso", float),
+        fullIso = Var("fullIso", float),
         id = Var("id", int),
         passLooseNN = Var("passLooseNN", int),
         passLoosePF = Var("passLoosePF", int),
