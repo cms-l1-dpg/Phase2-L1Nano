@@ -251,7 +251,7 @@ caloTauTable = cms.EDProducer(
     doc = cms.string("Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
-        et  = Var("tauEt",  float, precision=l1_float_precision_),
+        pt  = Var("tauEt",  float, precision=l1_float_precision_), # Define as pt in nano, as required by menu tools downstream
         phi = Var("phi", float, precision=l1_float_precision_),
         eta = Var("eta", float, precision=l1_float_precision_),
     )
