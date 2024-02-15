@@ -285,12 +285,12 @@ nnCaloTauTable = cms.EDProducer(
     )
 )
 
-nnTauTable = cms.EDProducer(
+nnPuppiTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tNNTauProducerPuppi","L1PFTausNN"),
     cut = cms.string(""),
-    name = cms.string("L1nnTau"),
-    doc = cms.string("NN Taus"),
+    name = cms.string("L1nnPuppiTau"),
+    doc = cms.string("NN Puppi Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
@@ -347,7 +347,7 @@ p2L1TablesTask = cms.Task(
     # taus
     caloTauTable,
     nnCaloTauTable,
-    nnTauTable,
+    nnPuppiTauTable,
     hpsTauTable,
     # GTT
     vtxTable,
