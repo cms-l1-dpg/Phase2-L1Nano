@@ -222,6 +222,18 @@ puppiMetTable = cms.EDProducer(
     )
 )
 
+puppiMLMetTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tMETMLProducer",""),
+    name = cms.string("L1puppiMLMET"),
+    doc = cms.string("Puppi ML MET, origin: Correlator"),
+    singleton = cms.bool(True), # the number of entries is variable
+    variables = cms.PSet(
+        l1PtVars,
+        et = Var("et",float)
+    )
+)
+
 sc4SumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tSC4PFL1PuppiCorrectedEmulatorMHT",""),
@@ -329,6 +341,7 @@ p2L1TablesTask = cms.Task(
     caloJetTable,
     # ## sums
     puppiMetTable,
+    puppiMLMetTable,
     sc4SumsTable,
     histoSumsTable,
     # taus
