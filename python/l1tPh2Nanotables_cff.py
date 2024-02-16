@@ -205,7 +205,7 @@ caloJetTable = sc4JetTable.clone(
     src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
     name = cms.string("L1caloJet"),
     doc = cms.string("Calo Jets, origin: GCT"),
-    cut = cms.string("pt > 30"), ## increase this to save space
+    cut = cms.string("pt > 5"), ## increase this to save space
 )
 
 ### SUMS
@@ -246,7 +246,7 @@ histoSumsTable = sc4SumsTable.clone(
 caloTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tCaloJet","L1CaloTauCollectionBXV"),
-    cut = cms.string("pt > 20"),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1caloTau"),
     doc = cms.string("Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
