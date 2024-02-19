@@ -12,17 +12,10 @@ l1GTObjVars = cms.PSet(
 
 ### P2GT Algo Block - trigger decisions
 gtAlgoTable = cms.EDProducer(
-    "P2GTAlgoBlockFlatTableProducer",
-    src = cms.InputTag('l1tGTAlgoBlockProducer'),
-    cut = cms.string(""),
-    name = cms.string("L1GT"),
-    doc = cms.string("GT Algo Block decisions"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        # name = Var("algoName",string, doc = "algo name"), # does not work
-        final = Var("decisionFinal",float, doc = "final decision"),
-        initial = Var("decisionBeforeBxMaskAndPrescale",float, doc = "initial decision"),
-    )
+    "P2GTTriggerResultsConverter", 
+    src = cms.InputTag("l1tGTAlgoBlockProducer"),
+    decision = cms.string("final"),
+    # prefix = cms.string("L1_"),
 )
 
 ### Vertex
@@ -61,12 +54,12 @@ gtTkPhoTable =cms.EDProducer(
         l1GTObjVars,
         ## hw values
         # hwPt = Var("hwPT_toInt()",int,doc="hardware pt"),
-        hwQual = Var("hwQual_toInt()",int),
-        hwIso = Var("hwIso_toInt()",int),
+        hwQual = Var("hwQualityFlags_toInt()",int),
+        hwIso = Var("hwIsolationPT_toInt()",int),
         ## more physical values
         ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        iso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()}",float, doc = "absolute isolation"),
-        relIso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()} / pt",float, doc = "relative isolation")
+        iso = Var(f"hwIsolationPT_toInt()*{scale_parameter.isolationPT_lsb.value()}",float, doc = "absolute isolation"),
+        relIso = Var(f"hwIsolationPT_toInt()*{scale_parameter.isolationPT_lsb.value()} / pt",float, doc = "relative isolation")
     )
 )
 
@@ -87,6 +80,8 @@ gtTkMuTable = gtTkEleTable.clone(
     name = cms.string("L1GTgmtTkMuon"),
     doc = cms.string("GT GMT tkMuon"),
 )
+
+gtTkMuTable.variables.hwQual = Var("hwQualityScore_toInt()",int)
 
 ## GT seededCone puppi Jets
 gtSCJetsTable = cms.EDProducer(
@@ -138,7 +133,7 @@ gtHtSumTable = cms.EDProducer(
         # l1GTObjVars,
         mht = Var("pt", float, doc="MHT pt"),
         mhtPhi = Var("phi", float, doc="MHT phi"),
-        ht = Var(f"hwSca_sum_toInt()*{scale_parameter.sca_sum_lsb.value()}", float, doc="HT"), ## HACK via hw value!
+        ht = Var(f"hwScalarSumPT_toInt()*{scale_parameter.scalarSumPT_lsb.value()}", float, doc="HT"), ## HACK via hw value!
     )
 )
 
