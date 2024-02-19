@@ -8,6 +8,7 @@ Tested under latest CMSSW_14_0 pre-release: `CMSSW_14_0_0_pre3`:
 ```bash
 cmsrel CMSSW_14_0_0_pre3
 cd CMSSW_14_0_0_pre3/src
+git cms-checkout-topic -u p2l1-gtEmulator:phase2-l1t-integration-14_0_0_pre3
 git clone git@github.com:cms-l1-dpg/Phase2-L1Nano.git PhysicsTools/L1Nano
 scram b -j 8
 ```
