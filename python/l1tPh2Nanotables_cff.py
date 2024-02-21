@@ -175,7 +175,7 @@ sc4JetTable = cms.EDProducer(
     variables = cms.PSet(
         l1P3Vars,
         et = Var("et",float),
-        z0 = Var("vz", float, "vertex z0"), ## empty
+        # z0 = Var("vz", float, "vertex z0"), ## empty
     )
 )
 
@@ -347,7 +347,7 @@ p2L1TablesTask = cms.Task(
     caloTauTable,
     nnCaloTauTable,
     nnPuppiTauTable,
-    hpsTauTable,
+    # hpsTauTable,
     # GTT
     vtxTable,
     pvtxTable,
