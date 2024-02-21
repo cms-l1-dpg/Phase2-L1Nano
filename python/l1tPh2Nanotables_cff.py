@@ -202,7 +202,7 @@ histoJetTable = sc4JetTable.clone(
 
 
 caloJetTable = sc4JetTable.clone(
-    src = cms.InputTag("l1tCaloJet","L1CaloJetCollectionBXV"),
+    src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
     name = cms.string("L1caloJet"),
     doc = cms.string("Calo Jets, origin: GCT"),
     cut = cms.string("pt > 5"), ## increase this to save space
@@ -215,6 +215,18 @@ puppiMetTable = cms.EDProducer(
     src = cms.InputTag("l1tMETPFProducer",""),
     name = cms.string("L1puppiMET"),
     doc = cms.string("Puppi MET, origin: Correlator"),
+    singleton = cms.bool(True), # the number of entries is variable
+    variables = cms.PSet(
+        l1PtVars,
+        et = Var("et",float)
+    )
+)
+
+puppiMLMetTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tMETMLProducer",""),
+    name = cms.string("L1puppiMLMET"),
+    doc = cms.string("Puppi ML MET, origin: Correlator"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         l1PtVars,
@@ -245,30 +257,47 @@ histoSumsTable = sc4SumsTable.clone(
 ### Taus
 caloTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag("l1tCaloJet","L1CaloTauCollectionBXV"),
+    src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1caloTau"),
     doc = cms.string("Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
-        l1P3Vars,
+        pt  = Var("tauEt",  float, precision=l1_float_precision_), # Define as pt in nano, as required by menu tools downstream
+        phi = Var("phi", float, precision=l1_float_precision_),
+        eta = Var("eta", float, precision=l1_float_precision_),
     )
 )
 
-nnTauTable = cms.EDProducer(
+
+nnCaloTauTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tNNCaloTauEmulator","L1NNCaloTauCollectionBXV"),
+    cut = cms.string("pt > 20"),
+    name = cms.string("L1nnCaloTau"),
+    doc = cms.string("NN Calo Taus"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1P3Vars,
+        hwQual = Var("hwQual",int,doc="Tau ID working point, 90% --> 3, 95% --> 2, 99% --> 1, anything else --> 0"),
+        hwIso = Var("hwIso",int,doc="Tau ID * 10E4")
+    )
+)
+
+nnPuppiTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tNNTauProducerPuppi","L1PFTausNN"),
     cut = cms.string(""),
-    name = cms.string("L1nnTau"),
-    doc = cms.string("NN Taus"),
+    name = cms.string("L1nnPuppiTau"),
+    doc = cms.string("NN Puppi Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
         charge = Var("charge", int),
         z0 = Var("z0", float, "vertex z0"),                
         ## copy paste from old menu ntuple https://github.com/artlbv/cmssw/blob/from-CMSSW_12_5_2_patch1/L1Trigger/L1TNtuples/src/L1AnalysisPhaseIIStep1.cc#L543C1-L555C1
-        chargedIso = Var("chargedIso", int),
-        fullIso = Var("fullIso", int),
+        chargedIso = Var("chargedIso", float),
+        fullIso = Var("fullIso", float),
         id = Var("id", int),
         passLooseNN = Var("passLooseNN", int),
         passLoosePF = Var("passLoosePF", int),
@@ -278,6 +307,18 @@ nnTauTable = cms.EDProducer(
         passTightNNMass = Var("passTightNNMass", int),
         passMass = Var("passMass", int),
         dXY = Var("dxy", float),
+    )
+)
+
+hpsTauTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1HPSPFTauEmuProducer","HPSTaus"),
+    cut = cms.string(""),
+    name = cms.string("L1hpsTau"),
+    doc = cms.string("HPS Taus"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1P3Vars
     )
 )
 
@@ -299,11 +340,14 @@ p2L1TablesTask = cms.Task(
     caloJetTable,
     # ## sums
     puppiMetTable,
+    puppiMLMetTable,
     sc4SumsTable,
     histoSumsTable,
     # taus
     caloTauTable,
-    nnTauTable,
+    nnCaloTauTable,
+    nnPuppiTauTable,
+    hpsTauTable,
     # GTT
     vtxTable,
     pvtxTable,
