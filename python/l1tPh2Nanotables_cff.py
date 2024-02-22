@@ -94,7 +94,7 @@ pvtxTable = vtxTable.clone(
 tkPhotonTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tLayer2EG','L1CtTkEm'),
-    cut = cms.string(""),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1tkPhoton"),
     doc = cms.string("Tk Photons (EM)"),
     singleton = cms.bool(False), # the number of entries is variable
@@ -145,7 +145,7 @@ staEGmerged = cms.EDProducer("CandViewMerger",
 staEGTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("staEGmerged"),
-    cut = cms.string(""),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1EG"),
     doc = cms.string("standalone EG merged endcap and barrel"),
     # singleton = cms.bool(False), # the number of entries is variable
@@ -165,7 +165,7 @@ staEGTable = cms.EDProducer(
 staEGebTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
-    cut = cms.string(""),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1EGbarrel"),
     doc = cms.string("standalone EG barrel"),
     # singleton = cms.bool(False), # the number of entries is variable
