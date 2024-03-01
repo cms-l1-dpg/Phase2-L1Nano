@@ -3,11 +3,26 @@ NanoAOD ntupler for Phase-2 L1 Objects
 
 ## Setup
 
-Tested under latest CMSSW_14_0 pre-release: `CMSSW_14_0_0_pre3`:
+This is for version `V33` that is based on the IB tag `phase2-l1t-1400pre3_v2` with these instructions:
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Recipe_for_phase2_l1t_1400pre3_v2
 
 ```bash
 cmsrel CMSSW_14_0_0_pre3
-cd CMSSW_14_0_0_pre3/src
+cd CMSSW_14_0_0_pre3/src/
+cmsenv
+git cms-init
+git cms-checkout-topic -u cms-l1t-offline:phase2-l1t-1400pre3_v2
+scram b -j 8
+
+#Get missing data files for NN Calo Taus
+cd ../../
+git clone https://github.com/jonamotta/L1Trigger-L1CaloTrigger.git
+cd CMSSW_14_0_0_pre3/src/
+git cms-addpkg L1Trigger/L1CaloTrigger
+mkdir L1Trigger/L1CaloTrigger/data
+cp -r ../../L1Trigger-L1CaloTrigger/Phase2_NNCaloTaus L1Trigger/L1CaloTrigger/data
+
+### ADDING NANO
 git clone git@github.com:cms-l1-dpg/Phase2-L1Nano.git PhysicsTools/L1Nano
 scram b -j 8
 ```
@@ -16,9 +31,9 @@ scram b -j 8
 
 ### Direct config
 
-In the `test` directory there is a `cmsRun` config to rerun the L1 trigger + the P2GT emulator and produce the nano ntuple from these outputs.
+In the `test` directory there is a `cmsRun` config to rerun the L1 + Track trigger + the P2GT emulator and produce the nano ntuple from these outputs.
 
-Usage: `cmsRun rerunL1_140pre3_Nano_cfg.py`
+Usage: `cmsRun test/v33_rerunL1wTT_cfg.py`
 
 ### Via cmsDriver
 
@@ -28,7 +43,7 @@ One can append the L1Nano output to the `cmsDriver` command via this customisati
 -s USER:PhysicsTools/L1Nano/l1tPh2Nano_cff.l1tPh2NanoTask --customise PhysicsTools/L1Nano/l1tPh2Nano_cff.addFullPh2L1Nano
 ```
 
-`cmsDriver` command (w/ Track Trigger, based on [the 1400pre3 recipe from the Offline SW twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Recipe_for_phase2_l1t_1400pre3_v)):
+`cmsDriver` command (w/ Track Trigger, based on [the 1400pre3 recipe from the Offline SW twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Recipe_for_phase2_l1t_1400pre3_v2):
 ```bash
 cmsDriver.py step1 --conditions 131X_mcRun4_realistic_v9 -n 2 --era Phase2C17I13M9 --eventcontent FEVTDEBUGHLT -s RAW2DIGI,L1,L1TrackTrigger,L1P2GT --datatier GEN-SIM-DIGI-RAW-MINIAOD --fileout file:test.root --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring,L1Trigger/Configuration/customisePhase2.addHcalTriggerPrimitives,L1Trigger/Configuration/customisePhase2FEVTDEBUGHLT.customisePhase2FEVTDEBUGHLT,L1Trigger/Configuration/customisePhase2TTNoMC.customisePhase2TTNoMC --geometry Extended2026D95 --nThreads 8 --filein /store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_L1TFix_Trk1GeV_131X_mcRun4_realistic_v9-v1/50000/005bc30b-cf79-4b3b-9ec1-a80e13072afd.root --mc --inputCommands=keep *, drop l1tPFJets_*_*_* --outputCommands=drop l1tPFJets_*_*_*
 ```

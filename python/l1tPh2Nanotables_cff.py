@@ -12,7 +12,74 @@ vtxTable = cms.EDProducer(
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         z0 = Var("z0()",float, doc = "primary vertex position z coordinate"),
-        sumPt = Var("pt()",float, doc = "sum pt of tracks")
+        sumPt = Var("pt()",float, doc = "sum pt of tracks"),
+        hwValid = Var("validBits()",bool, doc = "hardware vertex valid bit"),
+        hwZ0 = Var("z0Bits()",int, doc = "hardware z0 vertex position"),
+        # hwNTracksIn = Var("multiplicityBits()",int, doc = "hardware track multiplicity in the vertex"), # Currently not filled in emulation or firmware
+        hwPt = Var("ptBits()",int,doc="hardware pt"), # This value seems to be essentially (uint)pt(), but there should be 2 float bits (0.25GeV granularity) represented here... is to_uint() truncating the float bits?
+        # hwQual = Var("qualityBits()",int,doc="hardware qual"), # Currently not filled in emulation or firmware
+        # hwNTracksOut = Var("inverseMultiplicityBits()",int, doc = "hardware track multiplicity out of the vertex"), # Currently not filled in emulation or firmware
+     )
+ )
+
+gttTrackJetsTable = cms.EDProducer(
+    "SimpleL1TkJetWordCandidateFlatTableProducer",
+    src = cms.InputTag("l1tTrackJetsEmulation","L1TrackJets"),
+    name = cms.string("L1TrackJet"),
+    doc = cms.string("GTT Track Jets"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        pt = Var("pt()", float, doc="pt"),
+        eta = Var("glbeta()", float, doc="eta"),
+        phi = Var("glbphi()", float, doc="phi"),
+        z0 = Var("z0()", float, doc="z0"), #Jet z0 is now always 0, however?
+        hwPt = Var("ptBits()", int, doc="hardware pt"),
+        hwEta = Var("glbPhiBits()", int, doc="hardware eta"),
+        hwPhi = Var("glbEtaBits()", int, doc="hardware eta"),
+        hwZ0 = Var("z0Bits()", int, doc="hardware z0"), #Jet z0 is now always 0, however?
+        hwNTracks = Var("ntBits()", int, doc="hardware number of tracks"),
+        hwNDisplacedTracks = Var("ntBits()", int, doc="hardware number of tracks"),
+    )
+)
+
+gttExtTrackJetsTable = gttTrackJetsTable.clone(
+    src = cms.InputTag("l1tTrackJetsExtendedEmulation", "L1TrackJetsExtended"),
+    name = cms.string("L1ExtTrackJet"),
+    doc = cms.string("GTT Extended Track Jets"),
+)
+
+gttEtSumTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tTrackerEmuEtMiss", "L1TrackerEmuEtMiss"),
+    name = cms.string("L1TrackMET"),
+    doc = cms.string("GTT Track MET"),
+    singleton = cms.bool(True), # the number of entries is variable
+    variables = cms.PSet(
+        # pt = Var("pt", float, doc="MET pt"),
+        pt = Var("hwPt() * 0.03125", float, doc = "Track MET"), # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h#L50
+        hwPt = Var("hwPt()", int, doc = "hardware Pt Track MET"),
+        # phi = Var("phi", float, doc="MET phi"),
+        # hwValid = Var("hwQual() > 0",int, doc = "hardware Missing Et valid bit"),
+        hwValid = Var("hwQual()",bool, doc = "hardware Missing Et valid bit"),
+        # hwVectorSumPt = Var("Et().range()", int, doc = "hardware Missing Et vector sum"),
+        hwPhi = Var("hwPhi", int, doc = "hardware Missing Et phi"),
+    )
+)
+
+gttHtSumTable = cms.EDProducer(
+    "SimpleCandidateFlatTableProducer",
+    src = cms.InputTag("l1tTrackerEmuHTMiss", "L1TrackerEmuHTMiss"),
+    name = cms.string("L1TrackHT"),
+    doc = cms.string("GTT Track Missing HT"),
+    singleton = cms.bool(True), # the number of entries is variable
+    variables = cms.PSet(
+        hwValid = Var("hwQual()",bool, doc = "hardware Track MHT valid bit"),
+        hwPhi = Var("hwPhi()", int, doc = "hardware Track MHT phi"),
+        hwPt = Var("hwPt()", int, doc = "hardware Track HT"),
+        # mht = Var("pt", float, doc="MHT pt"),
+        # mhtPhi = Var("phi", float, doc="MHT phi"),
+        mht = Var(f"p4().energy() * 0.03125", float, doc="MHT"), # as in https://github.com/artlbv/cmssw/blob/from-CMSSW_12_5_2_patch1/L1Trigger/L1TNtuples/src/L1AnalysisPhaseIIStep1.cc#L623
+        ht = Var("hwPt() * 0.03125", float, doc = "Track HT"), # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkHTMissEmulatorProducer.h#L65
     )
 )
 
@@ -27,7 +94,7 @@ pvtxTable = vtxTable.clone(
 tkPhotonTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tLayer2EG','L1CtTkEm'),
-    cut = cms.string(""),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1tkPhoton"),
     doc = cms.string("Tk Photons (EM)"),
     singleton = cms.bool(False), # the number of entries is variable
@@ -78,7 +145,7 @@ staEGmerged = cms.EDProducer("CandViewMerger",
 staEGTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("staEGmerged"),
-    cut = cms.string(""),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1EG"),
     doc = cms.string("standalone EG merged endcap and barrel"),
     # singleton = cms.bool(False), # the number of entries is variable
@@ -98,7 +165,7 @@ staEGTable = cms.EDProducer(
 staEGebTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
-    cut = cms.string(""),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1EGbarrel"),
     doc = cms.string("standalone EG barrel"),
     # singleton = cms.bool(False), # the number of entries is variable
@@ -273,7 +340,7 @@ caloTauTable = cms.EDProducer(
 nnCaloTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tNNCaloTauEmulator","L1NNCaloTauCollectionBXV"),
-    cut = cms.string("pt > 20"),
+    cut = cms.string("pt > 5"),
     name = cms.string("L1nnCaloTau"),
     doc = cms.string("NN Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
@@ -351,4 +418,9 @@ p2L1TablesTask = cms.Task(
     # GTT
     vtxTable,
     pvtxTable,
+    gttTrackJetsTable,
+    gttExtTrackJetsTable,
+    gttEtSumTable,
+    gttHtSumTable,
 )
+

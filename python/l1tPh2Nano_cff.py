@@ -47,7 +47,9 @@ def addGenObjects(process):
         process.l1tPh2NanoTask.add(process.prunedGenParticleTable)
 
     # lower genVisTau pt threshold
-    process.genVisTauTable.cut = "pt > 1."
+    process.genVisTauTable.cut = "pt > 1"
+    # lower AK8 gen jet threshold
+    process.genJetAK8Table.cut = "pt > 10"
 
     process.l1tPh2NanoTask.add(
                 puTable, metMCTable,
