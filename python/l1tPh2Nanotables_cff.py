@@ -19,8 +19,8 @@ vtxTable = cms.EDProducer(
         hwQual = Var("qualityBits()", "uint", doc = "hardware qual"), # Currently not filled in emulation or firmware
         hwNTracksIn = Var("multiplicityBits()", "uint", doc = "hardware track multiplicity in the vertex"), # Currently not filled in emulation or firmware
         hwNTracksOut = Var("inverseMultiplicityBits()", "uint", doc = "hardware track multiplicity out of the vertex"), # Currently not filled in emulation or firmware
-        hwWordA = Var("vertexWord().range(31, 0).to_uint()", "uint", doc = "hardware vertex word first 32 bits"),
-        hwWordB = Var("vertexWord().range(63, 32).to_uint()", "uint", doc = "hardware vertex word second 32 bits"),
+        # hwWordA = Var("vertexWord().range(31, 0).to_uint()", "uint", doc = "hardware vertex word first 32 bits"),
+        # hwWordB = Var("vertexWord().range(63, 32).to_uint()", "uint", doc = "hardware vertex word second 32 bits"),
      )
  )
 
@@ -42,10 +42,10 @@ gttTrackJetsTable = cms.EDProducer(
         hwNTracks = Var("ntBits()", "uint", doc="hardware number of tracks"),
         hwNDisplacedTracks = Var("xtBits()", "uint", doc="hardware number of tracks"),
         hwDisplacedFlagBits = Var("dispFlagBits()", "uint", doc="hardware displaced flag bits"),
-        hwWordA = Var("tkJetWord().range(31, 0).to_uint()", "uint", doc = "hardware track jet word first 32 bits"),
-        hwWordB = Var("tkJetWord().range(63, 32).to_uint()", "uint", doc = "hardware track jet word second 32 bits"),
-        hwWordC = Var("tkJetWord().range(95, 64).to_uint()", "uint", doc = "hardware track jet word third 32 bits"),
-        hwWordD = Var("tkJetWord().range(127, 96).to_uint()", "uint", doc = "hardware track jet word fourth 32 bits"),
+        # hwWordA = Var("tkJetWord().range(31, 0).to_uint()", "uint", doc = "hardware track jet word first 32 bits"),
+        # hwWordB = Var("tkJetWord().range(63, 32).to_uint()", "uint", doc = "hardware track jet word second 32 bits"),
+        # hwWordC = Var("tkJetWord().range(95, 64).to_uint()", "uint", doc = "hardware track jet word third 32 bits"),
+        # hwWordD = Var("tkJetWord().range(127, 96).to_uint()", "uint", doc = "hardware track jet word fourth 32 bits"),
     )
 )
 
@@ -66,10 +66,10 @@ gttExtTrackJetsTable = gttTrackJetsTable.clone(
         hwNTracks = Var("ntBits()", "uint", doc="hardware number of tracks"),
         hwNDisplacedTracks = Var("xtBits()", "uint", doc="hardware number of tracks"),
         hwDisplacedFlagBits = Var("dispFlagBits()", "uint", doc="hardware displaced flag bits"),
-        hwWordA = Var("tkJetWord().range(31, 0).to_uint()", "uint", doc = "hardware extended track jet word first 32 bits"),
-        hwWordB = Var("tkJetWord().range(63, 32).to_uint()", "uint", doc = "hardware extended track jet word second 32 bits"),
-        hwWordC = Var("tkJetWord().range(95, 64).to_uint()", "uint", doc = "hardware extended track jet word third 32 bits"),
-        hwWordD = Var("tkJetWord().range(127, 96).to_uint()", "uint", doc = "hardware extended track jet word fourth 32 bits"),
+        # hwWordA = Var("tkJetWord().range(31, 0).to_uint()", "uint", doc = "hardware extended track jet word first 32 bits"),
+        # hwWordB = Var("tkJetWord().range(63, 32).to_uint()", "uint", doc = "hardware extended track jet word second 32 bits"),
+        # hwWordC = Var("tkJetWord().range(95, 64).to_uint()", "uint", doc = "hardware extended track jet word third 32 bits"),
+        # hwWordD = Var("tkJetWord().range(127, 96).to_uint()", "uint", doc = "hardware extended track jet word fourth 32 bits"),
         )
 )
 
