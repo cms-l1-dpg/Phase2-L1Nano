@@ -14,10 +14,8 @@ vtxTable = cms.EDProducer(
         z0 = Var("z0()",float, doc = "primary vertex position z coordinate"),
         sumPt = Var("pt()",float, doc = "sum pt of tracks"),
         hwValid = Var("validBits()", bool, doc = "hardware vertex valid bit"),
-        # hwPt = Var("ptBits()", "uint", doc = "hardware pt"), # This value seems to be essentially (uint)pt(), but there should be 2 float bits (0.25GeV granularity) represented here... is to_uint() truncating the float bits?
-        hwPt = Var("vertexWord().range(35, 24).to_uint()", "uint", doc = "hardware vertex sum pt"),
-        # hwZ0 = Var("z0Bits()", "uint", doc = "hardware z0 vertex position"),
-        hwZ0 = Var("vertexWord().range(15, 1).to_uint()", "uint", doc = "hardware z0 vertex position"),
+        hwPt = Var("ptBits()", "uint", doc = "hardware pt"),
+        hwZ0 = Var("z0Bits()", "uint", doc = "hardware z0 vertex position"),
         hwQual = Var("qualityBits()", "uint", doc = "hardware qual"), # Currently not filled in emulation or firmware
         hwNTracksIn = Var("multiplicityBits()", "uint", doc = "hardware track multiplicity in the vertex"), # Currently not filled in emulation or firmware
         hwNTracksOut = Var("inverseMultiplicityBits()", "uint", doc = "hardware track multiplicity out of the vertex"), # Currently not filled in emulation or firmware
@@ -36,12 +34,11 @@ gttTrackJetsTable = cms.EDProducer(
         pt = Var("pt()", float, doc="pt"),
         eta = Var("glbeta()", float, doc="eta"),
         phi = Var("glbphi()", float, doc="phi"),
-        z0 = Var("z0()", float, doc="z0"), #Jet z0 is now always 0, however?
-        # hwPt = Var("ptBits()", "uint", doc="hardware pt"),
-        hwPt = Var("tkJetWord().range(15, 0).to_uint()", "uint", doc="hardware pt"), #Work around the ap_fixed bits issue
+        z0 = Var("z0()", float, doc="z0"), 
+        hwPt = Var("ptBits()", "uint", doc="hardware pt"),
         hwEta = Var("glbEtaBits()", "uint", doc="hardware eta"),
         hwPhi = Var("glbPhiBits()", "uint", doc="hardware eta"),
-        hwZ0 = Var("z0Bits()", "uint", doc="hardware z0"), #Jet z0 is now always 0, however?
+        hwZ0 = Var("z0Bits()", "uint", doc="hardware z0"),
         hwNTracks = Var("ntBits()", "uint", doc="hardware number of tracks"),
         hwNDisplacedTracks = Var("xtBits()", "uint", doc="hardware number of tracks"),
         hwDisplacedFlagBits = Var("dispFlagBits()", "uint", doc="hardware displaced flag bits"),
@@ -61,12 +58,11 @@ gttExtTrackJetsTable = gttTrackJetsTable.clone(
         pt = Var("pt()", float, doc="pt"),
         eta = Var("glbeta()", float, doc="eta"),
         phi = Var("glbphi()", float, doc="phi"),
-        z0 = Var("z0()", float, doc="z0"), #Jet z0 is now always 0, however?
-        # hwPt = Var("ptBits()", "uint", doc="hardware pt"),
-        hwPt = Var("tkJetWord().range(15, 0).to_uint()", "uint", doc="hardware pt"), #Work around the ap_fixed bits issue
+        z0 = Var("z0()", float, doc="z0"),
+        hwPt = Var("ptBits()", "uint", doc="hardware pt"),
         hwEta = Var("glbEtaBits()", "uint", doc="hardware eta"),
         hwPhi = Var("glbPhiBits()", "uint", doc="hardware eta"),
-        hwZ0 = Var("z0Bits()", "uint", doc="hardware z0"), #Jet z0 is now always 0, however?
+        hwZ0 = Var("z0Bits()", "uint", doc="hardware z0"),
         hwNTracks = Var("ntBits()", "uint", doc="hardware number of tracks"),
         hwNDisplacedTracks = Var("xtBits()", "uint", doc="hardware number of tracks"),
         hwDisplacedFlagBits = Var("dispFlagBits()", "uint", doc="hardware displaced flag bits"),
