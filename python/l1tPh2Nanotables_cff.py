@@ -53,24 +53,6 @@ gttExtTrackJetsTable = gttTrackJetsTable.clone(
     src = cms.InputTag("l1tTrackJetsExtendedEmulation", "L1TrackJetsExtended"),
     name = cms.string("L1ExtTrackJet"),
     doc = cms.string("GTT Extended Track Jets"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        pt = Var("pt()", float, doc="pt"),
-        eta = Var("glbeta()", float, doc="eta"),
-        phi = Var("glbphi()", float, doc="phi"),
-        z0 = Var("z0()", float, doc="z0"),
-        hwPt = Var("ptBits()", "uint", doc="hardware pt"),
-        hwEta = Var("glbEtaBits()", "uint", doc="hardware eta"),
-        hwPhi = Var("glbPhiBits()", "uint", doc="hardware eta"),
-        hwZ0 = Var("z0Bits()", "uint", doc="hardware z0"),
-        hwNTracks = Var("ntBits()", "uint", doc="hardware number of tracks"),
-        hwNDisplacedTracks = Var("xtBits()", "uint", doc="hardware number of tracks"),
-        hwDisplacedFlagBits = Var("dispFlagBits()", "uint", doc="hardware displaced flag bits"),
-        # hwWordA = Var("tkJetWord().range(31, 0).to_uint()", "uint", doc = "hardware extended track jet word first 32 bits"),
-        # hwWordB = Var("tkJetWord().range(63, 32).to_uint()", "uint", doc = "hardware extended track jet word second 32 bits"),
-        # hwWordC = Var("tkJetWord().range(95, 64).to_uint()", "uint", doc = "hardware extended track jet word third 32 bits"),
-        # hwWordD = Var("tkJetWord().range(127, 96).to_uint()", "uint", doc = "hardware extended track jet word fourth 32 bits"),
-        )
 )
 
 gttEtSumTable = cms.EDProducer(
@@ -84,7 +66,6 @@ gttEtSumTable = cms.EDProducer(
         pt = Var("hwPt() * 0.03125", float, doc = "Track MET"),
         # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h#L51
         phi = Var("hwPhi() * 0.00076699039", float, doc = "Track MET Phi"),
-        et = Var("et", float, "track transverse energy"),
         hwValid = Var("hwQual() > 0", bool, doc = "hardware Missing Et valid bit"),
         hwPt = Var("hwPt()", "int", doc = "hardware pt track MET"),
         hwPhi = Var("hwPhi()", "int", doc = "hardware Missing Et phi"),
