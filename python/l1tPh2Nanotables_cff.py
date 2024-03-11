@@ -13,12 +13,14 @@ vtxTable = cms.EDProducer(
     variables = cms.PSet(
         z0 = Var("z0()",float, doc = "primary vertex position z coordinate"),
         sumPt = Var("pt()",float, doc = "sum pt of tracks"),
-        hwValid = Var("validBits()",bool, doc = "hardware vertex valid bit"),
-        hwZ0 = Var("z0Bits()",int, doc = "hardware z0 vertex position"),
-        # hwNTracksIn = Var("multiplicityBits()",int, doc = "hardware track multiplicity in the vertex"), # Currently not filled in emulation or firmware
-        hwPt = Var("ptBits()",int,doc="hardware pt"), # This value seems to be essentially (uint)pt(), but there should be 2 float bits (0.25GeV granularity) represented here... is to_uint() truncating the float bits?
-        # hwQual = Var("qualityBits()",int,doc="hardware qual"), # Currently not filled in emulation or firmware
-        # hwNTracksOut = Var("inverseMultiplicityBits()",int, doc = "hardware track multiplicity out of the vertex"), # Currently not filled in emulation or firmware
+        hwValid = Var("validBits()", bool, doc = "hardware vertex valid bit"),
+        hwPt = Var("ptBits()", "uint", doc = "hardware pt"),
+        hwZ0 = Var("z0Bits()", "uint", doc = "hardware z0 vertex position"),
+        hwQual = Var("qualityBits()", "uint", doc = "hardware qual"), # Currently not filled in emulation or firmware
+        hwNTracksIn = Var("multiplicityBits()", "uint", doc = "hardware track multiplicity in the vertex"), # Currently not filled in emulation or firmware
+        hwNTracksOut = Var("inverseMultiplicityBits()", "uint", doc = "hardware track multiplicity out of the vertex"), # Currently not filled in emulation or firmware
+        # hwWordA = Var("vertexWord().range(31, 0).to_uint()", "uint", doc = "hardware vertex word first 32 bits"),
+        # hwWordB = Var("vertexWord().range(63, 32).to_uint()", "uint", doc = "hardware vertex word second 32 bits"),
      )
  )
 
@@ -32,13 +34,18 @@ gttTrackJetsTable = cms.EDProducer(
         pt = Var("pt()", float, doc="pt"),
         eta = Var("glbeta()", float, doc="eta"),
         phi = Var("glbphi()", float, doc="phi"),
-        z0 = Var("z0()", float, doc="z0"), #Jet z0 is now always 0, however?
-        hwPt = Var("ptBits()", int, doc="hardware pt"),
-        hwEta = Var("glbPhiBits()", int, doc="hardware eta"),
-        hwPhi = Var("glbEtaBits()", int, doc="hardware eta"),
-        hwZ0 = Var("z0Bits()", int, doc="hardware z0"), #Jet z0 is now always 0, however?
-        hwNTracks = Var("ntBits()", int, doc="hardware number of tracks"),
-        hwNDisplacedTracks = Var("ntBits()", int, doc="hardware number of tracks"),
+        z0 = Var("z0()", float, doc="z0"), 
+        hwPt = Var("ptBits()", "uint", doc="hardware pt"),
+        hwEta = Var("glbEtaBits()", "uint", doc="hardware eta"),
+        hwPhi = Var("glbPhiBits()", "uint", doc="hardware eta"),
+        hwZ0 = Var("z0Bits()", "uint", doc="hardware z0"),
+        hwNTracks = Var("ntBits()", "uint", doc="hardware number of tracks"),
+        hwNDisplacedTracks = Var("xtBits()", "uint", doc="hardware number of tracks"),
+        hwDisplacedFlagBits = Var("dispFlagBits()", "uint", doc="hardware displaced flag bits"),
+        # hwWordA = Var("tkJetWord().range(31, 0).to_uint()", "uint", doc = "hardware track jet word first 32 bits"),
+        # hwWordB = Var("tkJetWord().range(63, 32).to_uint()", "uint", doc = "hardware track jet word second 32 bits"),
+        # hwWordC = Var("tkJetWord().range(95, 64).to_uint()", "uint", doc = "hardware track jet word third 32 bits"),
+        # hwWordD = Var("tkJetWord().range(127, 96).to_uint()", "uint", doc = "hardware track jet word fourth 32 bits"),
     )
 )
 
@@ -55,14 +62,13 @@ gttEtSumTable = cms.EDProducer(
     doc = cms.string("GTT Track MET"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
-        # pt = Var("pt", float, doc="MET pt"),
-        pt = Var("hwPt() * 0.03125", float, doc = "Track MET"), # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h#L50
-        hwPt = Var("hwPt()", int, doc = "hardware Pt Track MET"),
-        # phi = Var("phi", float, doc="MET phi"),
-        # hwValid = Var("hwQual() > 0",int, doc = "hardware Missing Et valid bit"),
-        hwValid = Var("hwQual()",bool, doc = "hardware Missing Et valid bit"),
-        # hwVectorSumPt = Var("Et().range()", int, doc = "hardware Missing Et vector sum"),
-        hwPhi = Var("hwPhi", int, doc = "hardware Missing Et phi"),
+        # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h#L50
+        pt = Var("hwPt() * 0.03125", float, doc = "Track MET"),
+        # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h#L51
+        phi = Var("hwPhi() * 0.00076699039", float, doc = "Track MET Phi"),
+        hwValid = Var("hwQual() > 0", bool, doc = "hardware Missing Et valid bit"),
+        hwPt = Var("hwPt()", "int", doc = "hardware pt track MET"),
+        hwPhi = Var("hwPhi()", "int", doc = "hardware Missing Et phi"),
     )
 )
 
@@ -73,13 +79,15 @@ gttHtSumTable = cms.EDProducer(
     doc = cms.string("GTT Track Missing HT"),
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
-        hwValid = Var("hwQual()",bool, doc = "hardware Track MHT valid bit"),
-        hwPhi = Var("hwPhi()", int, doc = "hardware Track MHT phi"),
-        hwPt = Var("hwPt()", int, doc = "hardware Track HT"),
-        # mht = Var("pt", float, doc="MHT pt"),
-        # mhtPhi = Var("phi", float, doc="MHT phi"),
-        mht = Var(f"p4().energy() * 0.03125", float, doc="MHT"), # as in https://github.com/artlbv/cmssw/blob/from-CMSSW_12_5_2_patch1/L1Trigger/L1TNtuples/src/L1AnalysisPhaseIIStep1.cc#L623
-        ht = Var("hwPt() * 0.03125", float, doc = "Track HT"), # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkHTMissEmulatorProducer.h#L65
+        # as in https://github.com/artlbv/cmssw/blob/from-CMSSW_12_5_2_patch1/L1Trigger/L1TNtuples/src/L1AnalysisPhaseIIStep1.cc#L623
+        mht = Var(f"p4().energy()", float, doc="Track MHT vector sum"), 
+        # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkHTMissEmulatorProducer.h#L70
+        phi = Var("?hwPhi * 0.00076699039 > 3.1415926535?hwPhi * 0.00076699039 - 2 * 3.1415926535:hwPhi * 0.00076699039", float, doc = "Track MHT Phi"), # Fix phi-wraparound issue
+        # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkHTMissEmulatorProducer.h#L65
+        ht = Var("hwPt() * 0.03125", float, doc = "Track HT scalar sum"), 
+        hwValid = Var("hwQual() > 0", bool, doc = "hardware Track MHT valid bit"),
+        hwPt = Var("hwPt()", "int", doc = "hardware Track HT scalar sum"),
+        hwPhi = Var("hwPhi()", "int", doc = "hardware Track MHT phi"),
     )
 )
 
