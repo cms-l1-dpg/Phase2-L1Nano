@@ -63,7 +63,7 @@ gttEtSumTable = cms.EDProducer(
     singleton = cms.bool(True), # the number of entries is variable
     variables = cms.PSet(
         # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h#L50
-        pt = Var("hwPt() * 0.03125", float, doc = "Track MET"),
+        pt = Var("et", float, doc = "Track MET"),
         # as in https://github.com/cms-l1t-offline/cmssw/blob/phase2-l1t-integration-14_0_0_pre3/L1Trigger/L1TTrackMatch/interface/L1TkEtMissEmuAlgo.h#L51
         phi = Var("hwPhi() * 0.00076699039", float, doc = "Track MET Phi"),
         hwValid = Var("hwQual() > 0", bool, doc = "hardware Missing Et valid bit"),
