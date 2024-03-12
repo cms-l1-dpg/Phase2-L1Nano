@@ -217,7 +217,7 @@ staMuTable = cms.EDProducer(
         phi = Var("phPhi()",float),
         z0 = Var("phZ0()",float),
         d0 = Var("phD0()",float),
-        beta = Var("phBeta()",float),
+        # beta = Var("phBeta()",float), # does not exist
 
         ## hw Values
         hwPt = Var("hwPt()",int,doc="hardware pt"),
