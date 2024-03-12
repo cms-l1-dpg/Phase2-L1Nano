@@ -271,6 +271,7 @@ sc4ExtJetTable = sc4JetTable.clone(
     doc = cms.string("SeededCone 0.4 Puppi jet from extended Puppi,  origin: Correlator"),
     externalVariables = cms.PSet(
         btagScore = ExtVar(cms.InputTag("l1tBJetProducerPuppiCorrectedEmulator", "L1PFBJets"),float, doc="NNBtag score"),
+        llpTagScore = ExtVar(cms.InputTag("l1tTOoLLiPProducerCorrectedEmulator", "L1PFLLPJets"),float, doc="NN LLP Tag score"),
     ),
 )
 
