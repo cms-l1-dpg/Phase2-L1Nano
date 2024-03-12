@@ -86,9 +86,17 @@ gtTkMuTable = gtTkEleTable.clone(
     src = cms.InputTag('l1tGTProducer','GMTTkMuons'),
     name = cms.string("L1GTgmtTkMuon"),
     doc = cms.string("GT GMT tkMuon"),
+    variables = cms.PSet(
+        l1GTObjVars,
+        z0 = Var("vz",float),
+        charge = Var("charge", int, doc="charge id"),
+        ## hw
+        hwQual = Var("hwQual_toInt()",int),
+        hwD0 = Var("hwD0_toInt()",int),
+        hwZ0 = Var("hwZ0_toInt()",int),
+        # hwBeta = Var("hwBeta_toInt()",int)
+    )
 )
-gtTkMuTable.variables.hwD0 = Var("hwD0_toInt()",int)
-gtTkMuTable.variables.hwBeta = Var("hwBeta_toInt()",int)
 
 gtSaMuTable = gtTkMuTable.clone(
     src = cms.InputTag('l1tGTProducer','GMTSaPromptMuons'),
