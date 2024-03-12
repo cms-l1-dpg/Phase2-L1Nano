@@ -87,6 +87,20 @@ gtTkMuTable = gtTkEleTable.clone(
     name = cms.string("L1GTgmtTkMuon"),
     doc = cms.string("GT GMT tkMuon"),
 )
+gtTkMuTable.variables.hwD0 = Var("hwD0_toInt()",int)
+gtTkMuTable.variables.hwBeta = Var("hwBeta_toInt()",int)
+
+gtSaMuTable = gtTkMuTable.clone(
+    src = cms.InputTag('l1tGTProducer','GMTSaPromptMuons'),
+    name = cms.string("L1GTgmtMuon"),
+    doc = cms.string("GT GMT standalone Muon"),
+)
+
+gtSaDispMuTable = gtTkMuTable.clone(
+    src = cms.InputTag('l1tGTProducer','GMTSaDisplacedMuons'),
+    name = cms.string("L1GTgmtDispMuon"),
+    doc = cms.string("GT GMT standalone displaced Muon"),
+)
 
 ## GT seededCone puppi Jets
 gtSCJetsTable = cms.EDProducer(
@@ -148,6 +162,7 @@ p2GTL1TablesTask = cms.Task(
     gtTkPhoTable,
     gtTkEleTable,
     gtTkMuTable,
+    gtSaMuTable, gtSaDispMuTable,
     gtSCJetsTable,
     gtNNTauTable,
     gtEtSumTable,
