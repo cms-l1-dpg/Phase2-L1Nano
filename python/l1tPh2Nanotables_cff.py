@@ -91,6 +91,12 @@ gttHtSumTable = cms.EDProducer(
     )
 )
 
+gttExtHtSumTable = gttHtSumTable.clone(
+    src = cms.InputTag("l1tTrackerEmuHTMissExtended","L1TrackerEmuHTMissExtended"),
+    name = cms.string("L1ExtTrackHT"),
+    doc = cms.string("GTT Extended Track Missing HT"),
+)
+
 ### Store Primary Vertex only (first vertex)
 pvtxTable = vtxTable.clone(
     maxLen = cms.uint32(1),
@@ -436,5 +442,6 @@ p2L1TablesTask = cms.Task(
     gttExtTrackJetsTable,
     gttEtSumTable,
     gttHtSumTable,
+    gttExtHtSumTable,
 )
 
