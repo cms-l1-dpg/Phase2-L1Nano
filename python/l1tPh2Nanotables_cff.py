@@ -91,6 +91,12 @@ gttHtSumTable = cms.EDProducer(
     )
 )
 
+gttExtHtSumTable = gttHtSumTable.clone(
+    src = cms.InputTag("l1tTrackerEmuHTMissExtended","L1TrackerEmuHTMissExtended"),
+    name = cms.string("L1ExtTrackHT"),
+    doc = cms.string("GTT Extended Track Missing HT"),
+)
+
 ### Store Primary Vertex only (first vertex)
 pvtxTable = vtxTable.clone(
     maxLen = cms.uint32(1),
@@ -201,7 +207,7 @@ staMuTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag('l1tSAMuonsGmt','promptSAMuons'),
     name = cms.string("L1gmtMuon"),
-    doc = cms.string("GMT standalone Muons"),
+    doc = cms.string("GMT standalone Muons, origin: GMT"),
     cut = cms.string(""),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
@@ -211,13 +217,13 @@ staMuTable = cms.EDProducer(
         chargeNoPh = Var("charge", int, doc="charge id"),
 
         ## physical values
-        #phPt = Var("phPt()",float),
+        charge  = Var("phCharge", int, doc="charge id"),
         pt  = Var("phPt()",float),
         eta = Var("phEta()",float),
         phi = Var("phPhi()",float),
         z0 = Var("phZ0()",float),
         d0 = Var("phD0()",float),
-        charge  = Var("phCharge", int, doc="charge id"),
+        # beta = Var("phBeta()",float), # does not exist
 
         ## hw Values
         hwPt = Var("hwPt()",int,doc="hardware pt"),
@@ -232,10 +238,15 @@ staMuTable = cms.EDProducer(
     )
 )
 
+staDisplacedMuTable = staMuTable.clone(
+    src = cms.InputTag("l1tSAMuonsGmt", "displacedSAMuons"),
+    name = cms.string("L1gmtDispMuon"),
+    doc = cms.string("GMT standalone displaced Muons, origin: GMT"),
+)
 gmtTkMuTable = staMuTable.clone(
-    src = cms.InputTag('l1tTkMuonsGmtLowPtFix','l1tTkMuonsGmtLowPtFix'),
+    src = cms.InputTag('l1tTkMuonsGmt'),
     name = cms.string("L1gmtTkMuon"),
-    doc = cms.string("GMT Tk Muons"),
+    doc = cms.string("GMT Tk Muons, origin: GMT"),
 )
 # gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
 
@@ -266,6 +277,7 @@ sc4ExtJetTable = sc4JetTable.clone(
     doc = cms.string("SeededCone 0.4 Puppi jet from extended Puppi,  origin: Correlator"),
     externalVariables = cms.PSet(
         btagScore = ExtVar(cms.InputTag("l1tBJetProducerPuppiCorrectedEmulator", "L1PFBJets"),float, doc="NNBtag score"),
+        llpTagScore = ExtVar(cms.InputTag("l1tTOoLLiPProducerCorrectedEmulator", "L1PFLLPJets"),float, doc="NN LLP Tag score"),
     ),
 )
 
@@ -401,7 +413,7 @@ hpsTauTable = cms.EDProducer(
 p2L1TablesTask = cms.Task(
     ## Muons
     gmtTkMuTable,
-    staMuTable,
+    staMuTable, staDisplacedMuTable,
     ## EG
     tkEleTable,
     tkPhotonTable,
@@ -430,5 +442,6 @@ p2L1TablesTask = cms.Task(
     gttExtTrackJetsTable,
     gttEtSumTable,
     gttHtSumTable,
+    gttExtHtSumTable,
 )
 
