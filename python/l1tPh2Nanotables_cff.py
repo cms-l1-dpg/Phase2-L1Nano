@@ -199,7 +199,7 @@ staEGeeTable =  staEGebTable.clone(
 
 staMuTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag('l1tSAMuonsGmt','promptSAMuons'),
+    src = cms.InputTag('l1tSAMuonsGmt','prompt'),
     name = cms.string("L1gmtMuon"),
     doc = cms.string("GMT standalone Muons, origin: GMT"),
     cut = cms.string(""),
@@ -233,7 +233,7 @@ staMuTable = cms.EDProducer(
 )
 
 staDisplacedMuTable = staMuTable.clone(
-    src = cms.InputTag("l1tSAMuonsGmt", "displacedSAMuons"),
+    src = cms.InputTag("l1tSAMuonsGmt", "displaced"),
     name = cms.string("L1gmtDispMuon"),
     doc = cms.string("GMT standalone displaced Muons, origin: GMT"),
 )
@@ -243,6 +243,47 @@ gmtTkMuTable = staMuTable.clone(
     doc = cms.string("GMT Tk Muons, origin: GMT"),
 )
 # gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
+### Standalone Muon from GMT, before ghost busting
+
+KMTFpromptMuTable = staMuTable.clone(
+    src = cms.InputTag("l1tKMTFMuonsGmt", "prompt"),
+    name = cms.string("L1KMTFMuon"),
+    doc = cms.string("GMT KMTF prompt Muons, origin: GMT"),
+)
+
+KMTFDisplaceMuTable = staMuTable.clone(
+    src = cms.InputTag("l1tKMTFMuonsGmt", "displaced"),
+    name = cms.string("L1KMTFDispMuon"),
+    doc = cms.string("GMT KMTF Displaced Muons, origin: GMT"),
+)
+
+OMTFpromptMuTable = staMuTable.clone(
+    src = cms.InputTag("l1tFwdMuonsGmt", "prompt"),
+    cut = cms.string("tfType() == 1 | tfType() == 2"), #tftype::omtf_neg, tftype::omtf_pos
+    name = cms.string("L1OMTFMuon"),
+    doc = cms.string("GMT OMTF prompt Muons, origin: GMT"),
+)
+
+OMTFDisplaceMuTable = staMuTable.clone(
+    src = cms.InputTag("l1tFwdMuonsGmt", "displaced"),
+    cut = cms.string("tfType() == 1 | tfType() == 2"), #tftype::omtf_neg, tftype::omtf_pos
+    name = cms.string("L1OMTFDispMuon"),
+    doc = cms.string("GMT OMTF displaced Muons, origin: GMT"),
+)
+
+EMTFpromptMuTable = staMuTable.clone(
+    src = cms.InputTag("l1tFwdMuonsGmt", "prompt"),
+    cut = cms.string("tfType() == 3 | tfType() == 4"), #tftype::EMTF_neg, tftype::EMTF_pos
+    name = cms.string("L1EMTFMuon"),
+    doc = cms.string("GMT EMTF prompt Muons, origin: GMT"),
+)
+
+EMTFDisplaceMuTable = staMuTable.clone(
+    src = cms.InputTag("l1tFwdMuonsGmt", "displaced"),
+    cut = cms.string("tfType() == 3 | tfType() == 4"), #tftype::EMTF_neg, tftype::EMTF_pos
+    name = cms.string("L1EMTFDispMuon"),
+    doc = cms.string("GMT EMTF displaced Muons, origin: GMT"),
+)
 
 ### Jets
 sc4JetTable = cms.EDProducer(
@@ -408,6 +449,12 @@ p2L1TablesTask = cms.Task(
     ## Muons
     gmtTkMuTable,
     staMuTable, staDisplacedMuTable,
+    KMTFpromptMuTable,
+    KMTFDisplaceMuTable,
+    OMTFpromptMuTable,
+    OMTFDisplaceMuTable,
+    EMTFpromptMuTable,
+    EMTFDisplaceMuTable,
     ## EG
     tkEleTable,
     tkPhotonTable,
