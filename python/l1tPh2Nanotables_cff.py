@@ -247,41 +247,41 @@ gmtTkMuTable = staMuTable.clone(
 
 KMTFpromptMuTable = staMuTable.clone(
     src = cms.InputTag("l1tKMTFMuonsGmt", "prompt"),
-    name = cms.string("L1KMTFMuon"),
+    name = cms.string("L1MuonKMTF"),
     doc = cms.string("GMT KMTF prompt Muons, origin: GMT"),
 )
 
 KMTFDisplaceMuTable = staMuTable.clone(
     src = cms.InputTag("l1tKMTFMuonsGmt", "displaced"),
-    name = cms.string("L1KMTFDispMuon"),
+    name = cms.string("L1DispMuonKMTF"),
     doc = cms.string("GMT KMTF Displaced Muons, origin: GMT"),
 )
 
 OMTFpromptMuTable = staMuTable.clone(
     src = cms.InputTag("l1tFwdMuonsGmt", "prompt"),
     cut = cms.string("tfType() == 1 | tfType() == 2"), #tftype::omtf_neg, tftype::omtf_pos
-    name = cms.string("L1OMTFMuon"),
+    name = cms.string("L1MuonOMTF"),
     doc = cms.string("GMT OMTF prompt Muons, origin: GMT"),
 )
 
 OMTFDisplaceMuTable = staMuTable.clone(
     src = cms.InputTag("l1tFwdMuonsGmt", "displaced"),
     cut = cms.string("tfType() == 1 | tfType() == 2"), #tftype::omtf_neg, tftype::omtf_pos
-    name = cms.string("L1OMTFDispMuon"),
+    name = cms.string("L1DispMuonOMTF"),
     doc = cms.string("GMT OMTF displaced Muons, origin: GMT"),
 )
 
 EMTFpromptMuTable = staMuTable.clone(
     src = cms.InputTag("l1tFwdMuonsGmt", "prompt"),
     cut = cms.string("tfType() == 3 | tfType() == 4"), #tftype::EMTF_neg, tftype::EMTF_pos
-    name = cms.string("L1EMTFMuon"),
+    name = cms.string("L1MuonEMTF"),
     doc = cms.string("GMT EMTF prompt Muons, origin: GMT"),
 )
 
 EMTFDisplaceMuTable = staMuTable.clone(
     src = cms.InputTag("l1tFwdMuonsGmt", "displaced"),
     cut = cms.string("tfType() == 3 | tfType() == 4"), #tftype::EMTF_neg, tftype::EMTF_pos
-    name = cms.string("L1EMTFDispMuon"),
+    name = cms.string("L1DispMuonEMTF"),
     doc = cms.string("GMT EMTF displaced Muons, origin: GMT"),
 )
 
