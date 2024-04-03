@@ -9,7 +9,11 @@ typedef SimpleFlatTableProducer<l1t::P2GTAlgoBlock> P2GTAlgoBlockFlatTableProduc
 #include "DataFormats/L1Trigger/interface/TkJetWord.h"
 typedef SimpleFlatTableProducer<l1t::TkJetWord> SimpleL1TkJetWordCandidateFlatTableProducer;
 
+#include "DataFormats/L1Trigger/interface/TkTripletWord.h"
+typedef SimpleFlatTableProducer<l1t::TkTripletWord> SimpleTkTripletWordCandidateFlatTableProducer;
+
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(SimpleL1VtxWordCandidateFlatTableProducer);
 DEFINE_FWK_MODULE(P2GTAlgoBlockFlatTableProducer);
 DEFINE_FWK_MODULE(SimpleL1TkJetWordCandidateFlatTableProducer);
+DEFINE_FWK_MODULE(SimpleTkTripletWordCandidateFlatTableProducer);
