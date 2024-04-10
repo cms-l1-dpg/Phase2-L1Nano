@@ -55,6 +55,36 @@ gttExtTrackJetsTable = gttTrackJetsTable.clone(
     doc = cms.string("GTT Extended Track Jets"),
 )
 
+gttTripletTable = cms.EDProducer(
+    "SimpleTkTripletWordCandidateFlatTableProducer",
+    src = cms.InputTag("l1tTrackTripletEmulation","L1TrackTripletWord"),
+    name = cms.string("L1TrackTripletWord"),
+    doc = cms.string("GTT Triplets"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        valid = Var("valid()", float, doc="valid"),
+        pt = Var("pt()", float, doc="pt"),
+        eta = Var("glbeta()", float, doc="eta"),
+        phi = Var("glbphi()", float, doc="phi"),
+        mass = Var("mass()", float, doc="mass"),
+        charge = Var("charge()", float, doc="charge"),
+        ditrackMinMass = Var("ditrackMinMass()", float, doc="ditrackMinMass"),
+        ditrackMaxMass = Var("ditrackMaxMass()", float, doc="ditrackMaxMass"),
+        ditrackMinZ0 = Var("ditrackMinZ0()", float, doc="ditrackMinZ0"),
+        ditrackMaxZ0 = Var("ditrackMaxZ0()", float, doc="ditrackMaxZ0"),
+        hwValid = Var("validBits()", "uint", doc="hardware valid"),
+        hwPt = Var("ptBits()", "uint", doc="hardware pt"),
+        hwEta = Var("glbEtaBits()", "uint", doc="hardware eta"),
+        hwPhi = Var("glbPhiBits()", "uint", doc="hardware eta"),
+        hwMass = Var("massBits()", "uint", doc="hardware mass"),
+        hwCharge = Var("chargeBits()", "uint", doc="hardware charge"),
+        hwDitrackMinMass = Var("ditrackMinMassBits()", "uint", doc="hardware DitrackMinMass"),
+        hwDitrackMaxMass = Var("ditrackMaxMassBits()", "uint", doc="hardware DitrackMaxMass"),
+        hwDitrackMinZ0 = Var("ditrackMinZ0Bits()", "uint", doc="hardware DitrackMinZ0"),
+        hwDitrackMaxZ0 = Var("ditrackMaxZ0Bits()", "uint", doc="hardware DitrackMaxZ0")
+    )
+)
+
 gttEtSumTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackerEmuEtMiss", "L1TrackerEmuEtMiss"),
@@ -487,6 +517,7 @@ p2L1TablesTask = cms.Task(
     pvtxTable,
     gttTrackJetsTable,
     gttExtTrackJetsTable,
+    gttTripletTable,
     gttEtSumTable,
     gttHtSumTable,
     gttExtHtSumTable,
