@@ -279,6 +279,11 @@ gmtTkMuTable = staMuTable.clone(
     doc = cms.string("GMT Tk Muons, origin: GMT"),
 )
 # gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
+gmtTkMuTable.variables.vlooseId  = Var("test_bit(hwQual(),0)", bool, doc = "VLoose ID, bit 0 of hwQual")
+gmtTkMuTable.variables.looseId   = Var("test_bit(hwQual(),1)", bool, doc = "Loose ID, bit 1 of hwQual")
+gmtTkMuTable.variables.mediumId  = Var("test_bit(hwQual(),2)", bool, doc = "Medium ID, bit 2 of hwQual")
+gmtTkMuTable.variables.tightId   = Var("test_bit(hwQual(),3)", bool, doc = "Tight ID, bit 3 of hwQual")
+
 ### Standalone Muon from GMT, before ghost busting
 
 KMTFpromptMuTable = staMuTable.clone(
