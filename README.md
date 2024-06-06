@@ -3,8 +3,10 @@ NanoAOD ntupler for Phase-2 L1 Objects
 
 ## Setup
 
-This is for version `V37` that is based on the IB tag `phase2-l1t-1400pre3_v9` with these instructions:
+This is for version `V38` that is based on the IB tag `phase2-l1t-1400pre3_v9` with these instructions:
 https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Recipe_for_phase2_l1t_1400pre3_v9
+
+Corresponding menu twiki section: https://twiki.cern.ch/twiki/bin/view/CMS/PhaseIIL1TriggerMenuTools#Phase_2_L1_Trigger_objects_for_2
 
 ```bash
 cmsrel CMSSW_14_0_0_pre3
