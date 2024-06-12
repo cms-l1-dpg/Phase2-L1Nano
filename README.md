@@ -24,7 +24,7 @@ scram b -j 8
 
 ### Direct config
 
-In the `test` directory there is a `cmsRun` config to rerun the L1 + **(NO Track trigger)** + the P2GT emulator and produce the nano ntuple from these outputs.
+In the `test` directory there is a `cmsRun` config to rerun the L1 + **(L1 Track trigger)** + the P2GT emulator and produce the nano ntuple from these outputs.
 
 Usage: `cmsRun test/V38_rerunL1wTT_cfg.py`
 
@@ -46,9 +46,9 @@ cmsDriver.py step1 --conditions 131X_mcRun4_realistic_v9 -n 1000 --era Phase2C17
 
 The output file is a nanoAOD file with the output branches in the `Events` tree.
 
-An overview of the corresponding content is shown here: https://alobanov.web.cern.ch/L1T/Phase2/L1Nano/l1menu_nano_V36_1400pre3v9_doc_report.html
+An overview of the corresponding content is shown here: https://alobanov.web.cern.ch/L1T/Phase2/L1Nano/l1menu_nano_V38_1400pre3V9_doc_report.html
 
-Size report: https://alobanov.web.cern.ch/L1T/Phase2/L1Nano/l1menu_nano_V36_1400pre3v9_size_report.html
+Size report: https://alobanov.web.cern.ch/L1T/Phase2/L1Nano/l1menu_nano_V38_1400pre3V9_size_report.html
 
 Example:
 
