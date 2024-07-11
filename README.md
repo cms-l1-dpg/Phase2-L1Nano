@@ -3,18 +3,14 @@ NanoAOD ntupler for Phase-2 L1 Objects
 
 ## Setup
 
-This is for version `V38` that is based on the IB tag `phase2-l1t-1400pre3_v9` with these instructions:
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Recipe_for_phase2_l1t_1400pre3_v9
+This is for the event content of the 140x MC campaign `Phase2Spring24DIGIRECOMiniAOD`.
 
-Corresponding menu twiki section: https://twiki.cern.ch/twiki/bin/view/CMS/PhaseIIL1TriggerMenuTools#Phase_2_L1_Trigger_objects_for_2
+NO corresponding menu twiki section YET.
 
 ```bash
-cmsrel CMSSW_14_0_0_pre3
-cd CMSSW_14_0_0_pre3/src/
+cmsrel CMSSW_14_1_0_pre4
+cd CMSSW_14_1_0_pre4/src/
 cmsenv
-git cms-init
-git cms-checkout-topic -u cms-l1t-offline:phase2-l1t-1400pre3_v9
-
 ### ADDING NANO
 git clone git@github.com:cms-l1-dpg/Phase2-L1Nano.git PhysicsTools/L1Nano
 scram b -j 8
@@ -23,10 +19,8 @@ scram b -j 8
 ## Usage
 
 ### Direct config
-
-In the `test` directory there is a `cmsRun` config to rerun the L1 + **(L1 Track trigger)** + the P2GT emulator and produce the nano ntuple from these outputs.
-
-Usage: `cmsRun test/V38_rerunL1wTT_cfg.py`
+ 
+NA
 
 ### Via cmsDriver
 
@@ -36,9 +30,9 @@ One can append the L1Nano output to the `cmsDriver` command via this customisati
 -s USER:PhysicsTools/L1Nano/l1tPh2Nano_cff.l1tPh2NanoTask --customise PhysicsTools/L1Nano/l1tPh2Nano_cff.addFullPh2L1Nano
 ```
 
-`cmsDriver` command (NO Track Trigger, based on [the 1400pre3 recipe from the Offline SW twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Recipe_for_phase2_l1t_1400pre3_v9):
+`cmsDriver` command to only run the P2GT and NANO from the event content:
 ```bash
-cmsDriver.py step1 --conditions 131X_mcRun4_realistic_v9 -n 1000 --era Phase2C17I13M9 --eventcontent NANOAOD -s RAW2DIGI,L1,L1P2GT,USER:PhysicsTools/L1Nano/l1tPh2Nano_cff.l1tPh2NanoTask --customise PhysicsTools/L1Nano/l1tPh2Nano_cff.addFullPh2L1Nano --datatier GEN-SIM-DIGI-RAW-MINIAOD --fileout file:test.root --customise SLHCUpgradeSimulations/Configuration/aging.customise_aging_1000,Configuration/DataProcessing/Utils.addMonitoring,L1Trigger/Configuration/customisePhase2.addHcalTriggerPrimitives --geometry Extended2026D95 --nThreads 8 --filein /store/mc/Phase2Spring23DIGIRECOMiniAOD/TT_TuneCP5_14TeV-powheg-pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU200_L1TFix_Trk1GeV_131X_mcRun4_realistic_v9-v1/50000/005bc30b-cf79-4b3b-9ec1-a80e13072afd.root --mc --inputCommands="keep *, drop l1tPFJets_*_*_*, drop l1tTrackerMuons_l1tTkMuonsGmt_*_*" --outputCommands="drop l1tPFJets_*_*_*, drop l1tTrackerMuons_l1tTkMuonsGmt_*_*" 
+cmsDriver.py step1 --conditions auto:phase2_realistic_T25 -n 2 --era Phase2C17I13M9 --eventcontent NANOAOD -s L1P2GT,USER:PhysicsTools/L1Nano/l1tPh2Nano_cff.l1tPh2NanoTask --customise PhysicsTools/L1Nano/l1tPh2Nano_cff.addFullPh2L1Nano --datatier FEVTDEBUGHLT --fileout file:nano_from_fevt.root --geometry Extended2026D95 --nThreads 1 --filein /store/mc/Phase2Spring24DIGIRECOMiniAOD/TT_TuneCP5_14TeV-POWHEG-Pythia8/GEN-SIM-DIGI-RAW-MINIAOD/PU140_Trk1GeV_140X_mcRun4_realistic_v4-v2/70000/1ab06eaa-9574-486d-954b-8535337fd5c5.root
 ```
 
 
