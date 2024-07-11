@@ -27,7 +27,7 @@ gtAlgoTable = cms.EDProducer(
 
 ### Vertex
 gtVtxTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "P2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','GTTPrimaryVert'),
     cut = cms.string(""),
     name = cms.string("L1GTVertex"),
@@ -51,7 +51,7 @@ gtPvTable = gtVtxTable.clone(
 
 ### GT
 gtTkPhoTable =cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "P2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Photons'),
     name = cms.string("L1GTtkPhoton"),
     doc = cms.string("GT tkPhotons"),
@@ -112,7 +112,7 @@ gtSaDispMuTable = gtTkMuTable.clone(
 
 ## GT seededCone puppi Jets
 gtSCJetsTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "P2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Jets'),
     cut = cms.string(""),
     name = cms.string("L1GTscJet"),
@@ -125,7 +125,7 @@ gtSCJetsTable = cms.EDProducer(
 )
 
 gtNNTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "P2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Taus'),
     cut = cms.string(""),
     name = cms.string("L1GTnnTau"),
@@ -139,7 +139,7 @@ gtNNTauTable = cms.EDProducer(
 )
 
 gtEtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "P2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2EtSum'),
     name = cms.string("L1GTpuppiMET"),
     doc = cms.string("GT CL2EtSum"),
@@ -151,7 +151,7 @@ gtEtSumTable = cms.EDProducer(
 )
 
 gtHtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "P2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2HtSum'),
     name = cms.string("L1GTscJetSum"),
     doc = cms.string("GT CL2HtSum"),
