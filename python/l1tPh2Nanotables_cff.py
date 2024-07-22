@@ -449,13 +449,15 @@ histoSumsTable = sc4SumsTable.clone(
 ### Taus
 caloTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
+    #src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
+    src = cms.InputTag("l1tCaloJet","L1CaloTauCollectionBXV"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1caloTau"),
     doc = cms.string("Calo Taus"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
-        pt  = Var("tauEt",  float, precision=l1_float_precision_), # Define as pt in nano, as required by menu tools downstream
+        pt  = Var("pt",  float, precision=l1_float_precision_), # Define as pt in nano, as required by menu tools downstream
+        #pt  = Var("tauEt",  float, precision=l1_float_precision_), # Define as pt in nano, as required by menu tools downstream
         phi = Var("phi", float, precision=l1_float_precision_),
         eta = Var("eta", float, precision=l1_float_precision_),
     )
@@ -533,7 +535,7 @@ p2L1TablesTask = cms.Task(
     staEGeeTable,
     # # ## jets
     sc4JetTable,
-    # sc8JetTable,
+    sc8JetTable,
     sc4ExtJetTable, 
     histoJetTable,
     caloJetTable,
@@ -543,7 +545,7 @@ p2L1TablesTask = cms.Task(
     sc4SumsTable,
     histoSumsTable,
     # # taus
-    # caloTauTable,
+    caloTauTable,
     # nnCaloTauTable,
     nnPuppiTauTable,
     # hpsTauTable,
@@ -557,4 +559,3 @@ p2L1TablesTask = cms.Task(
     gttHtSumTable,
     gttExtHtSumTable,
 )
-
