@@ -65,8 +65,8 @@ gtTkPhoTable =cms.EDProducer(
         hwIso = Var("hwIso_toInt()",int),
         ## more physical values
         ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        iso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()}",float, doc = "absolute isolation"),
-        relIso = Var(f"hwIso_toInt()*{scale_parameter.isolation_lsb.value()} / pt",float, doc = "relative isolation")
+        iso = Var(f"hwIso_toInt()*{scale_parameter.isolationPT_lsb.value()}",float, doc = "absolute isolation"),
+        relIso = Var(f"hwIso_toInt()*{scale_parameter.isolationPT_lsb.value()} / pt",float, doc = "relative isolation")
     )
 )
 
@@ -160,7 +160,7 @@ gtHtSumTable = cms.EDProducer(
         # l1GTObjVars,
         mht = Var("pt", float, doc="MHT pt"),
         mhtPhi = Var("phi", float, doc="MHT phi"),
-        ht = Var(f"hwSca_sum_toInt()*{scale_parameter.sca_sum_lsb.value()}", float, doc="HT"), ## HACK via hw value!
+        ht = Var(f"hwSca_sum_toInt()*{scale_parameter.scalarSumPT_lsb.value()}", float, doc="HT"), ## HACK via hw value!
     )
 )
 
