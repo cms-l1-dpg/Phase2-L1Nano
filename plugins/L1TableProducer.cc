@@ -34,25 +34,25 @@ typedef SimpleFlatTableProducer<l1t::TkTripletWord> SimpleTkTripletWordCandidate
 typedef SimpleFlatTableProducer<l1t::L1Candidate> SimpleTriggerL1CandidateFlatTableProducer;
 
 // #include "DataFormats/L1TCorrelator/interface/TkEm.h"
-// typedef BXVectorSimpleFlatTableProducer<l1t::TkEm> SimpleTriggerL1TkEmFlatTableProducer;
+// typedef SimpleFlatTableProducer<l1t::TkEm> SimpleTriggerL1TkEmFlatTableProducer;
 
 #include "DataFormats/L1TCorrelator/interface/TkElectron.h"
-typedef BXVectorSimpleFlatTableProducer<l1t::TkElectron> SimpleTriggerL1TkElectronFlatTableProducer;
+typedef SimpleFlatTableProducer<l1t::TkElectron> SimpleTriggerL1TkElectronFlatTableProducer;
 
 #include "DataFormats/L1TMuonPhase2/interface/SAMuon.h"
-typedef BXVectorSimpleFlatTableProducer<l1t::SAMuon> SimpleTriggerL1SAMuonFlatTableProducer;
+typedef SimpleFlatTableProducer<l1t::SAMuon> SimpleTriggerL1SAMuonFlatTableProducer;
 
 #include "DataFormats/L1TCalorimeterPhase2/interface/Phase2L1CaloJet.h"
-typedef BXVectorSimpleFlatTableProducer<l1tp2::Phase2L1CaloJet> SimpleTriggerL1CaloJetFlatTableProducer;
+typedef SimpleFlatTableProducer<l1tp2::Phase2L1CaloJet> SimpleTriggerL1CaloJetFlatTableProducer;
 
 // #include "DataFormats/L1TParticleFlow/interface/PFJet.h"
-// typedef BXVectorSimpleFlatTableProducer<l1t::PFJet> SimpleTriggerL1PFJetFlatTableProducer;
+// typedef SimpleFlatTableProducer<l1t::PFJet> SimpleTriggerL1PFJetFlatTableProducer;
 
 #include "DataFormats/L1TParticleFlow/interface/PFTau.h"
-typedef BXVectorSimpleFlatTableProducer<l1t::PFTau> SimpleTriggerL1PFTauFlatTableProducer;
+typedef SimpleFlatTableProducer<l1t::PFTau> SimpleTriggerL1PFTauFlatTableProducer;
 
 // #include "DataFormats/L1TParticleFlow/interface/HPSPFTau.h"
-// typedef BXVectorSimpleFlatTableProducer<l1t::HPSPFTau> SimpleTriggerL1HPSPFTauFlatTableProducer;
+// typedef SimpleFlatTableProducer<l1t::HPSPFTau> SimpleTriggerL1HPSPFTauFlatTableProducer;
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 DEFINE_FWK_MODULE(SimpleL1VtxWordCandidateFlatTableProducer);
