@@ -27,7 +27,8 @@ gtAlgoTable = cms.EDProducer(
 
 ### Vertex
 gtVtxTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','GTTPrimaryVert'),
     cut = cms.string(""),
     name = cms.string("L1GTVertex"),
@@ -51,7 +52,8 @@ gtPvTable = gtVtxTable.clone(
 
 ### GT
 gtTkPhoTable =cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Photons'),
     name = cms.string("L1GTtkPhoton"),
     doc = cms.string("GT tkPhotons"),
@@ -61,12 +63,12 @@ gtTkPhoTable =cms.EDProducer(
         l1GTObjVars,
         ## hw values
         # hwPt = Var("hwPT_toInt()",int,doc="hardware pt"),
-        hwQual = Var("hwQual_toInt()",int),
-        hwIso = Var("hwIso_toInt()",int),
+        hwQual = Var("hwQualityScore_toInt()",int),
+        hwIso = Var("hwIsolationPT_toInt()",int),
         ## more physical values
         ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        iso = Var(f"hwIso_toInt()*{scale_parameter.isolationPT_lsb.value()}",float, doc = "absolute isolation"),
-        relIso = Var(f"hwIso_toInt()*{scale_parameter.isolationPT_lsb.value()} / pt",float, doc = "relative isolation")
+        iso = Var(f"hwIsolationPT_toInt()*{scale_parameter.isolationPT_lsb.value()}",float, doc = "absolute isolation"),
+        relIso = Var(f"hwIsolationPT_toInt()*{scale_parameter.isolationPT_lsb.value()} / pt",float, doc = "relative isolation")
     )
 )
 
@@ -91,7 +93,7 @@ gtTkMuTable = gtTkEleTable.clone(
         z0 = Var("vz",float),
         charge = Var("charge", int, doc="charge id"),
         ## hw
-        hwQual = Var("hwQual_toInt()",int),
+        hwQual = Var("hwQualityScore_toInt()",int),
         hwD0 = Var("hwD0_toInt()",int),
         hwZ0 = Var("hwZ0_toInt()",int),
         # hwBeta = Var("hwBeta_toInt()",int)
@@ -125,7 +127,8 @@ gtSCJetsTable = cms.EDProducer(
 )
 
 gtNNTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Taus'),
     cut = cms.string(""),
     name = cms.string("L1GTnnTau"),
@@ -151,7 +154,8 @@ gtEtSumTable = cms.EDProducer(
 )
 
 gtHtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2HtSum'),
     name = cms.string("L1GTscJetSum"),
     doc = cms.string("GT CL2HtSum"),
@@ -160,7 +164,7 @@ gtHtSumTable = cms.EDProducer(
         # l1GTObjVars,
         mht = Var("pt", float, doc="MHT pt"),
         mhtPhi = Var("phi", float, doc="MHT phi"),
-        ht = Var(f"hwSca_sum_toInt()*{scale_parameter.scalarSumPT_lsb.value()}", float, doc="HT"), ## HACK via hw value!
+        ht = Var(f"hwScalarSumPT_toInt()*{scale_parameter.scalarSumPT_lsb.value()}", float, doc="HT"), ## HACK via hw value!
     )
 )
 

@@ -86,7 +86,9 @@ gttTripletTable = cms.EDProducer(
 )
 
 gttEtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1EtSumFlatTableProducer",
+    "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackerEmuEtMiss", "L1TrackerEmuEtMiss"),
     name = cms.string("L1TrackMET"),
     doc = cms.string("GTT Track MET"),
@@ -103,7 +105,9 @@ gttEtSumTable = cms.EDProducer(
 )
 
 gttHtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1EtSumFlatTableProducer",
+    "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackerEmuHTMiss", "L1TrackerEmuHTMiss"),
     name = cms.string("L1TrackHT"),
     doc = cms.string("GTT Track Missing HT"),
@@ -136,12 +140,14 @@ pvtxTable = vtxTable.clone(
 
 #### EG
 tkPhotonTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1TkEmFlatTableProducer",
+    "SimpleTriggerL1TkElectronFlatTableProducer", #TkElectron also includes trkzVtx needed for the electron table below
     src = cms.InputTag('l1tLayer2EG','L1CtTkEm'),
     cut = cms.string("pt > 5"),
     name = cms.string("L1tkPhoton"),
     doc = cms.string("Tk Photons (EM)"),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1ObjVars,
         relIso = Var("trkIsol", float, doc = "relative Isolation based on trkIsol variable"),
@@ -188,6 +194,7 @@ staEGmerged = cms.EDProducer("CandViewMerger",
 
 staEGTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1EGFlatTableProducer",
     src = cms.InputTag("staEGmerged"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1EG"),
@@ -207,7 +214,8 @@ staEGTable = cms.EDProducer(
 )
 
 staEGebTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1EGFlatTableProducer",
     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
     cut = cms.string("pt > 5"),
     name = cms.string("L1EGbarrel"),
@@ -234,12 +242,13 @@ staEGeeTable =  staEGebTable.clone(
 ### Muons
 
 staMuTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1SAMuonFlatTableProducer",
     src = cms.InputTag('l1tSAMuonsGmt','prompt'),
     name = cms.string("L1gmtMuon"),
     doc = cms.string("GMT standalone Muons, origin: GMT"),
     cut = cms.string(""),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         # l1ObjVars,
         ### WARNING : the pt/eta/phi/vz methods give rounded results -> use the "physical" accessors
@@ -329,6 +338,7 @@ EMTFDisplaceMuTable = staMuTable.clone(
 ### Jets
 sc4JetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1PFJetFlatTableProducer",
     src = cms.InputTag('l1tSC4PFL1PuppiCorrectedEmulator'),
     cut = cms.string(""),
     name = cms.string("L1puppiJetSC4"),
@@ -375,6 +385,7 @@ caloJetTable = sc4JetTable.clone(
 
 puppiMetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1EtSumFlatTableProducer",
     src = cms.InputTag("l1tMETPFProducer",""),
     name = cms.string("L1puppiMET"),
     doc = cms.string("Puppi MET, origin: Correlator"),
@@ -387,6 +398,8 @@ puppiMetTable = cms.EDProducer(
 
 puppiMLMetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1MetPfFlatTableProducer",
+    # "SimpleTriggerL1EtSumFlatTableProducer",
     src = cms.InputTag("l1tMETMLProducer",""),
     name = cms.string("L1puppiMLMET"),
     doc = cms.string("Puppi ML MET, origin: Correlator"),
@@ -399,6 +412,8 @@ puppiMLMetTable = cms.EDProducer(
 
 sc4SumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1EtSumFlatTableProducer",
+    # "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tSC4PFL1PuppiCorrectedEmulatorMHT",""),
     name = cms.string("L1puppiJetSC4sums"),
     doc = cms.string("HT and MHT from SeededCone Radius 0.8 jets; idx 0 is HT, idx 1 is MHT, origin: Correlator"),
@@ -419,12 +434,13 @@ histoSumsTable = sc4SumsTable.clone(
 
 ### Taus
 caloTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1CaloJetFlatTableProducer",
     src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1caloTau"),
     doc = cms.string("Calo Taus"),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         pt  = Var("tauEt",  float, precision=l1_float_precision_), # Define as pt in nano, as required by menu tools downstream
         phi = Var("phi", float, precision=l1_float_precision_),
@@ -434,7 +450,9 @@ caloTauTable = cms.EDProducer(
 
 
 nnCaloTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1TauFlatTableProducer",
+    "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tNNCaloTauEmulator","L1NNCaloTauCollectionBXV"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1nnCaloTau"),
@@ -448,12 +466,13 @@ nnCaloTauTable = cms.EDProducer(
 )
 
 nnPuppiTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1PFTauFlatTableProducer",
     src = cms.InputTag("l1tNNTauProducerPuppi","L1PFTausNN"),
     cut = cms.string(""),
     name = cms.string("L1nnPuppiTau"),
     doc = cms.string("NN Puppi Taus"),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
         charge = Var("charge", int),
@@ -475,6 +494,7 @@ nnPuppiTauTable = cms.EDProducer(
 
 hpsTauTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1HPSPFTauFlatTableProducer",
     src = cms.InputTag("l1HPSPFTauEmuProducer","HPSTaus"),
     cut = cms.string(""),
     name = cms.string("L1hpsTau"),
