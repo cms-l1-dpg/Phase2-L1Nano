@@ -33,8 +33,8 @@ typedef SimpleFlatTableProducer<l1t::TkTripletWord> SimpleTkTripletWordCandidate
 #include "DataFormats/L1Trigger/interface/L1Candidate.h"
 typedef SimpleFlatTableProducer<l1t::L1Candidate> SimpleTriggerL1CandidateFlatTableProducer;
 
-// #include "DataFormats/L1TCorrelator/interface/TkEm.h"
-// typedef SimpleFlatTableProducer<l1t::TkEm> SimpleTriggerL1TkEmFlatTableProducer;
+#include "DataFormats/L1TCorrelator/interface/TkEm.h"
+typedef SimpleFlatTableProducer<l1t::TkEm> SimpleTriggerL1TkEmFlatTableProducer;
 
 #include "DataFormats/L1TCorrelator/interface/TkElectron.h"
 typedef SimpleFlatTableProducer<l1t::TkElectron> SimpleTriggerL1TkElectronFlatTableProducer;
@@ -67,7 +67,7 @@ DEFINE_FWK_MODULE(SimpleTkTripletWordCandidateFlatTableProducer);
 // DEFINE_FWK_MODULE(SimpleTriggerL1TauFlatTableProducer);
 // DEFINE_FWK_MODULE(SimpleTriggerL1EtSumFlatTableProducer);
 DEFINE_FWK_MODULE(SimpleTriggerL1CandidateFlatTableProducer);
-// DEFINE_FWK_MODULE(SimpleTriggerL1TkEmFlatTableProducer);
+DEFINE_FWK_MODULE(SimpleTriggerL1TkEmFlatTableProducer);
 DEFINE_FWK_MODULE(SimpleTriggerL1TkElectronFlatTableProducer);
 DEFINE_FWK_MODULE(SimpleTriggerL1SAMuonFlatTableProducer);
 DEFINE_FWK_MODULE(SimpleTriggerL1CaloJetFlatTableProducer);

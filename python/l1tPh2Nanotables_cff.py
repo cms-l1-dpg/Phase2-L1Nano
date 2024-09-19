@@ -141,8 +141,7 @@ pvtxTable = vtxTable.clone(
 #### EG
 tkPhotonTable = cms.EDProducer(
     # "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1TkEmFlatTableProducer",
-    "SimpleTriggerL1TkElectronFlatTableProducer", #TkElectron also includes trkzVtx needed for the electron table below
+    "SimpleTriggerL1TkEmFlatTableProducer",
     src = cms.InputTag('l1tLayer2EG','L1CtTkEm'),
     cut = cms.string("pt > 5"),
     name = cms.string("L1tkPhoton"),
@@ -162,13 +161,38 @@ tkPhotonTable = cms.EDProducer(
     )
 )
 
-tkEleTable = tkPhotonTable.clone(
+tkEleTable = cms.EDProducer(
+    # "SimpleCandidateFlatTableProducer",
+    # "SimpleTriggerL1TkEmFlatTableProducer",
+    "SimpleTriggerL1TkElectronFlatTableProducer", #TkElectron also includes trkzVtx needed for the electron table below
     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
     name = cms.string("L1tkElectron"),
     doc = cms.string("Tk Electrons"),
+    cut = cms.string("pt > 5"),
+    # singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1ObjVars,
+        relIso = Var("trkIsol", float, doc = "relative Isolation based on trkIsol variable"),
+        # tkIso   = Var("trkIsol", float), ## use above instead to be consistent with the GT and with the tkEle
+        # tkIsoPV  = Var("trkIsolPV", float),
+        # pfIso   = Var("pfIsol", float),
+        # puppiIso  = Var("puppiIsol", float),
+        ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio
+        saId   = Var("test_bit(hwQual(),0)", bool, doc = "standalone ID, bit 0 of hwQual"),
+        eleId  = Var("test_bit(hwQual(),1)", bool, doc = "electron ID, bit 1 of hwQual"),
+        phoId  = Var("test_bit(hwQual(),2)", bool, doc = "photon ID, bit 2 of hwQual"),
+        z0     = Var("trkzVtx", float, "track vertex z0"),
+        charge = Var("charge", int, doc="charge"),
+    )
 )
-tkEleTable.variables.z0     = Var("trkzVtx", float, "track vertex z0")
-tkEleTable.variables.charge = Var("charge", int, doc="charge")
+
+# tkEleTable = tkPhotonTable.clone(
+#     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
+#     name = cms.string("L1tkElectron"),
+#     doc = cms.string("Tk Electrons"),
+# )
+# tkEleTable.variables.z0     = Var("trkzVtx", float, "track vertex z0")
+# tkEleTable.variables.charge = Var("charge", int, doc="charge")
 ## additional variables that are not used in the menu/GT
 ## from https://github.com/p2l1pfp/FastPUPPI/blob/12_5_X/NtupleProducer/python/runPerformanceNTuple.py#L499C8-L501C83
 # tkEleTable.variables.tkEta = Var("trkPtr.eta", float,precision=8)
