@@ -164,7 +164,7 @@ tkPhotonTable = cms.EDProducer(
 tkEleTable = cms.EDProducer(
     # "SimpleCandidateFlatTableProducer",
     # "SimpleTriggerL1TkEmFlatTableProducer",
-    "SimpleTriggerL1TkElectronFlatTableProducer", #TkElectron also includes trkzVtx needed for the electron table below
+    "SimpleTriggerL1TkElectronFlatTableProducer", #TkElectron includes trkzVtx
     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
     name = cms.string("L1tkElectron"),
     doc = cms.string("Tk Electrons"),
