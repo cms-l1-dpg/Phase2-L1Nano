@@ -306,16 +306,58 @@ staDisplacedMuTable = staMuTable.clone(
     name = cms.string("L1gmtDispMuon"),
     doc = cms.string("GMT standalone displaced Muons, origin: GMT"),
 )
-gmtTkMuTable = staMuTable.clone(
+
+gmtTkMuTable = cms.EDProducer(
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1TrackerMuonFlatTableProducer",
     src = cms.InputTag('l1tTkMuonsGmt'),
     name = cms.string("L1gmtTkMuon"),
     doc = cms.string("GMT Tk Muons, origin: GMT"),
+    cut = cms.string(""),
+    # singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        # l1ObjVars,
+        ### WARNING : the pt/eta/phi/vz methods give rounded results -> use the "physical" accessors
+        # vz = Var("vz",float),
+        chargeNoPh = Var("charge", int, doc="charge id"),
+
+        ## physical values
+        charge  = Var("phCharge", int, doc="charge id"),
+        pt  = Var("phPt()",float),
+        eta = Var("phEta()",float),
+        phi = Var("phPhi()",float),
+        z0 = Var("phZ0()",float),
+        d0 = Var("phD0()",float),
+        # beta = Var("phBeta()",float), # does not exist
+
+        ## hw Values
+        hwPt = Var("hwPt()",int,doc="hardware pt"),
+        hwEta = Var("hwEta()",int,doc="hardware eta"),
+        hwPhi = Var("hwPhi()",int,doc="hardware phi"),
+        hwQual = Var("hwQual()",int,doc="hardware qual"),
+        hwIso = Var("hwIso()",int,doc="hardware iso"),
+        hwBeta = Var("hwBeta()",int,doc="hardware beta"),
+        vlooseId  = Var("test_bit(hwQual(),0)", bool, doc = "VLoose ID, bit 0 of hwQual"),
+        looseId   = Var("test_bit(hwQual(),1)", bool, doc = "Loose ID, bit 1 of hwQual"),
+        mediumId  = Var("test_bit(hwQual(),2)", bool, doc = "Medium ID, bit 2 of hwQual"),
+        tightId   = Var("test_bit(hwQual(),3)", bool, doc = "Tight ID, bit 3 of hwQual")
+
+        # ## more info
+        # nStubs = Var("stubs().size()",int,doc="number of stubs"),
+    )
 )
+
+
+# gmtTkMuTable = staMuTable.clone(
+#     src = cms.InputTag('l1tTkMuonsGmt'),
+#     name = cms.string("L1gmtTkMuon"),
+#     doc = cms.string("GMT Tk Muons, origin: GMT"),
+# )
 # gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
-gmtTkMuTable.variables.vlooseId  = Var("test_bit(hwQual(),0)", bool, doc = "VLoose ID, bit 0 of hwQual")
-gmtTkMuTable.variables.looseId   = Var("test_bit(hwQual(),1)", bool, doc = "Loose ID, bit 1 of hwQual")
-gmtTkMuTable.variables.mediumId  = Var("test_bit(hwQual(),2)", bool, doc = "Medium ID, bit 2 of hwQual")
-gmtTkMuTable.variables.tightId   = Var("test_bit(hwQual(),3)", bool, doc = "Tight ID, bit 3 of hwQual")
+# gmtTkMuTable.variables.vlooseId  = Var("test_bit(hwQual(),0)", bool, doc = "VLoose ID, bit 0 of hwQual")
+# gmtTkMuTable.variables.looseId   = Var("test_bit(hwQual(),1)", bool, doc = "Loose ID, bit 1 of hwQual")
+# gmtTkMuTable.variables.mediumId  = Var("test_bit(hwQual(),2)", bool, doc = "Medium ID, bit 2 of hwQual")
+# gmtTkMuTable.variables.tightId   = Var("test_bit(hwQual(),3)", bool, doc = "Tight ID, bit 3 of hwQual")
 
 ### Standalone Muon from GMT, before ghost busting
 
