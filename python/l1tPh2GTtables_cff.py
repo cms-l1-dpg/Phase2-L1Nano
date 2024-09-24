@@ -63,7 +63,7 @@ gtTkPhoTable =cms.EDProducer(
         l1GTObjVars,
         ## hw values
         # hwPt = Var("hwPT_toInt()",int,doc="hardware pt"),
-        hwQual = Var("hwQualityScore_toInt()",int),
+        # hwQual = Var("hwQualityFlags_toInt()",int),
         hwIso = Var("hwIsolationPT_toInt()",int),
         ## more physical values
         ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
@@ -93,7 +93,7 @@ gtTkMuTable = gtTkEleTable.clone(
         z0 = Var("vz",float),
         charge = Var("charge", int, doc="charge id"),
         ## hw
-        hwQual = Var("hwQualityScore_toInt()",int),
+        # hwQual = Var("hwQualityFlags_toInt()",int),
         hwD0 = Var("hwD0_toInt()",int),
         hwZ0 = Var("hwZ0_toInt()",int),
         # hwBeta = Var("hwBeta_toInt()",int)
