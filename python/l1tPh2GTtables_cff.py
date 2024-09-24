@@ -11,19 +11,27 @@ l1GTObjVars = cms.PSet(
 )
 
 ### P2GT Algo Block - trigger decisions
-gtAlgoTable = cms.EDProducer(
-    "P2GTAlgoBlockFlatTableProducer",
-    src = cms.InputTag('l1tGTAlgoBlockProducer'),
-    cut = cms.string(""),
-    name = cms.string("L1GT"),
-    doc = cms.string("GT Algo Block decisions"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        # name = Var("algoName",string, doc = "algo name"), # does not work
-        final = Var("decisionFinal",float, doc = "final decision"),
-        initial = Var("decisionBeforeBxMaskAndPrescale",float, doc = "initial decision"),
-    )
+l1tP2GTTrigConvert = cms.EDProducer("P2GTTriggerResultsConverter",
+    src = cms.InputTag("l1tGTAlgoBlockProducer"),
+    prefix = cms.string("L1_"),     # can be anything or omitted, default: "L1_" 
+    decision = cms.string("final"), # can be "beforeBxMaskAndPrescale", "beforePrescale", "final" or omitted, default: "final"
 )
+
+# gtAlgoTable = cms.EDProducer(
+#     "P2GTAlgoBlockFlatTableProducer",
+#     src = cms.InputTag('l1tGTAlgoBlockProducer'),
+#     cut = cms.string(""),
+#     name = cms.string("L1GT"),
+#     doc = cms.string("GT Algo Block decisions"),
+#     singleton = cms.bool(False), # the number of entries is variable
+#     variables = cms.PSet(
+#         # name = Var("algoName",string, doc = "algo name"), # does not work
+#         final = Var("decisionFinal",float, doc = "final decision"),
+#         initial = Var("decisionBeforeBxMaskAndPrescale",float, doc = "initial decision"),
+#     )
+# )
+
+
 
 ### Vertex
 gtVtxTable = cms.EDProducer(
@@ -202,7 +210,7 @@ gtHtSumTable = cms.EDProducer(
 
 ## GT objects
 p2GTL1TablesTask = cms.Task(
-    # gtAlgoTable,
+    l1tP2GTTrigConvert, #gtAlgoTable,
     gtTkPhoTable,
     gtTkEleTable,
     gtTkMuTable,
