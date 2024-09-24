@@ -559,9 +559,9 @@ nnPuppiTauTable = cms.EDProducer(
 )
 
 hpsTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1HPSPFTauFlatTableProducer",
-    src = cms.InputTag("l1HPSPFTauEmuProducer","HPSTaus"),
+     # "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1HPSPFTauFlatTableProducer",
+    src = cms.InputTag("l1tHPSPFTauEmuProducer","HPSTaus"),
     cut = cms.string(""),
     name = cms.string("L1hpsTau"),
     doc = cms.string("HPS Taus"),
@@ -602,7 +602,7 @@ p2L1TablesTask = cms.Task(
     caloTauTable,
     nnCaloTauTable,
     nnPuppiTauTable,
-    hpsTauTable,
+    # hpsTauTable,
     # GTT
     vtxTable,
     pvtxTable,
