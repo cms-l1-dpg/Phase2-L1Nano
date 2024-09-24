@@ -173,7 +173,8 @@ gtNNTauTable = cms.EDProducer(
 )
 
 gtEtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2EtSum'),
     name = cms.string("L1GTpuppiMET"),
     doc = cms.string("GT CL2EtSum"),
