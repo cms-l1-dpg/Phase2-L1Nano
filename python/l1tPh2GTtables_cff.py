@@ -112,13 +112,44 @@ gtSaDispMuTable = gtTkMuTable.clone(
     doc = cms.string("GT GMT standalone displaced Muon"),
 )
 
-## GT seededCone puppi Jets
-gtSCJetsTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag('l1tGTProducer','CL2Jets'),
+# ## GT seededCone puppi Jets
+# gtSCJetsTable = cms.EDProducer(
+#     # "SimpleCandidateFlatTableProducer",
+#     "SimpleP2GTCandidateFlatTableProducer",
+#     src = cms.InputTag('l1tGTProducer','CL2Jets'),
+#     cut = cms.string(""),
+#     name = cms.string("L1GTscJet"),
+#     doc = cms.string("GT CL2Jets: seededCone Puppi Jets"),
+#     singleton = cms.bool(False), # the number of entries is variable
+#     variables = cms.PSet(
+#         l1GTObjVars,
+#         z0 = Var("vz",float),
+#     )
+# )
+
+## GT seededCone 0.4 puppi Jets
+gtSC4JetsTable = cms.EDProducer(
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
+    src = cms.InputTag('l1tGTProducer','CL2JetsSC4'),
     cut = cms.string(""),
-    name = cms.string("L1GTscJet"),
-    doc = cms.string("GT CL2Jets: seededCone Puppi Jets"),
+    name = cms.string("L1GTsc4Jet"),
+    doc = cms.string("GT CL2JetsSC4: seededCone 0.4 Puppi Jets"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1GTObjVars,
+        z0 = Var("vz",float),
+    )
+)
+
+## GT seededCone 0.8 puppi Jets
+gtSC8JetsTable = cms.EDProducer(
+    # "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
+    src = cms.InputTag('l1tGTProducer','CL2JetsSC8'),
+    cut = cms.string(""),
+    name = cms.string("L1GTsc8Jet"),
+    doc = cms.string("GT CL2JetsSC8: seededCone 0.8 Puppi Jets"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
@@ -175,7 +206,9 @@ p2GTL1TablesTask = cms.Task(
     gtTkEleTable,
     gtTkMuTable,
     gtSaMuTable, gtSaDispMuTable,
-    gtSCJetsTable,
+    # gtSCJetsTable,
+    gtSC4JetsTable,
+    gtSC8JetsTable,
     gtNNTauTable,
     gtEtSumTable,
     gtHtSumTable,
