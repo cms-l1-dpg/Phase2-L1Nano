@@ -202,7 +202,7 @@ gtHtSumTable = cms.EDProducer(
 
 ## GT objects
 p2GTL1TablesTask = cms.Task(
-    gtAlgoTable,
+    # gtAlgoTable,
     gtTkPhoTable,
     gtTkEleTable,
     gtTkMuTable,
