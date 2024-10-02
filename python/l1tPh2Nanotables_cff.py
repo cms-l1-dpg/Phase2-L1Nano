@@ -86,8 +86,6 @@ gttTripletTable = cms.EDProducer(
 )
 
 gttEtSumTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1EtSumFlatTableProducer",
     "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackerEmuEtMiss", "L1TrackerEmuEtMiss"),
     name = cms.string("L1TrackMET"),
@@ -105,8 +103,6 @@ gttEtSumTable = cms.EDProducer(
 )
 
 gttHtSumTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1EtSumFlatTableProducer",
     "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackerEmuHTMiss", "L1TrackerEmuHTMiss"),
     name = cms.string("L1TrackHT"),
@@ -140,7 +136,6 @@ pvtxTable = vtxTable.clone(
 
 #### EG
 tkPhotonTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
     "SimpleTriggerL1TkEmFlatTableProducer",
     src = cms.InputTag('l1tLayer2EG','L1CtTkEm'),
     cut = cms.string("pt > 5"),
@@ -162,8 +157,6 @@ tkPhotonTable = cms.EDProducer(
 )
 
 tkEleTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1TkEmFlatTableProducer",
     "SimpleTriggerL1TkElectronFlatTableProducer", #TkElectron includes trkzVtx
     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
     name = cms.string("L1tkElectron"),
@@ -218,7 +211,6 @@ staEGmerged = cms.EDProducer("CandViewMerger",
 
 staEGTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1EGFlatTableProducer",
     src = cms.InputTag("staEGmerged"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1EG"),
@@ -238,7 +230,6 @@ staEGTable = cms.EDProducer(
 )
 
 staEGebTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
     "SimpleTriggerL1EGFlatTableProducer",
     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
     cut = cms.string("pt > 5"),
@@ -266,7 +257,6 @@ staEGeeTable =  staEGebTable.clone(
 ### Muons
 
 staMuTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
     "SimpleTriggerL1SAMuonFlatTableProducer",
     src = cms.InputTag('l1tSAMuonsGmt','prompt'),
     name = cms.string("L1gmtMuon"),
@@ -308,7 +298,6 @@ staDisplacedMuTable = staMuTable.clone(
 )
 
 gmtTkMuTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
     "SimpleTriggerL1TrackerMuonFlatTableProducer",
     src = cms.InputTag('l1tTkMuonsGmt'),
     name = cms.string("L1gmtTkMuon"),
@@ -404,7 +393,6 @@ EMTFDisplaceMuTable = staMuTable.clone(
 ### Jets
 sc4JetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1PFJetFlatTableProducer",
     src = cms.InputTag('l1tSC4PFL1PuppiCorrectedEmulator'),
     cut = cms.string(""),
     name = cms.string("L1puppiJetSC4"),
@@ -451,7 +439,6 @@ caloJetTable = sc4JetTable.clone(
 
 puppiMetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1EtSumFlatTableProducer",
     src = cms.InputTag("l1tMETPFProducer",""),
     name = cms.string("L1puppiMET"),
     doc = cms.string("Puppi MET, origin: Correlator"),
@@ -464,8 +451,6 @@ puppiMetTable = cms.EDProducer(
 
 puppiMLMetTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1MetPfFlatTableProducer",
-    # "SimpleTriggerL1EtSumFlatTableProducer",
     src = cms.InputTag("l1tMETMLProducer",""),
     name = cms.string("L1puppiMLMET"),
     doc = cms.string("Puppi ML MET, origin: Correlator"),
@@ -478,8 +463,6 @@ puppiMLMetTable = cms.EDProducer(
 
 sc4SumsTable = cms.EDProducer(
     "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1EtSumFlatTableProducer",
-    # "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tSC4PFL1PuppiCorrectedEmulatorMHT",""),
     name = cms.string("L1puppiJetSC4sums"),
     doc = cms.string("HT and MHT from SeededCone Radius 0.8 jets; idx 0 is HT, idx 1 is MHT, origin: Correlator"),
@@ -500,7 +483,6 @@ histoSumsTable = sc4SumsTable.clone(
 
 ### Taus
 caloTauTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
     "SimpleTriggerL1CaloJetFlatTableProducer",
     src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
     cut = cms.string("pt > 5"),
@@ -516,8 +498,6 @@ caloTauTable = cms.EDProducer(
 
 
 nnCaloTauTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
-    # "SimpleTriggerL1TauFlatTableProducer",
     "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tNNCaloTauEmulator","L1NNCaloTauCollectionBXV"),
     cut = cms.string("pt > 5"),
@@ -532,7 +512,6 @@ nnCaloTauTable = cms.EDProducer(
 )
 
 nnPuppiTauTable = cms.EDProducer(
-    # "SimpleCandidateFlatTableProducer",
     "SimpleTriggerL1PFTauFlatTableProducer",
     src = cms.InputTag("l1tNNTauProducerPuppi","L1PFTausNN"),
     cut = cms.string(""),
@@ -559,9 +538,7 @@ nnPuppiTauTable = cms.EDProducer(
 )
 
 hpsTauTable = cms.EDProducer(
-     # "SimpleCandidateFlatTableProducer",
     "SimpleTriggerL1HPSPFTauFlatTableProducer",
-    # src = cms.InputTag("l1tHPSPFTauEmuProducer","HPSTaus"),
     src = cms.InputTag("l1tHPSPFTauProducerPF",""),
     cut = cms.string(""),
     name = cms.string("L1hpsTau"),
