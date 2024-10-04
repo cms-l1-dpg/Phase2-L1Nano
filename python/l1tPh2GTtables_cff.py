@@ -99,7 +99,7 @@ gtTkMuTable = gtTkEleTable.clone(
         z0 = Var("vz",float),
         charge = Var("charge", int, doc="charge id"),
         ## hw
-        hwQual = Var("hwQualityScore_toInt()",int),
+        hwQual = Var("hwQualityFlags_toInt()",int),
         hwD0 = Var("hwD0_toInt()",int),
         hwZ0 = Var("hwZ0_toInt()",int),
         # hwBeta = Var("hwBeta_toInt()",int)
