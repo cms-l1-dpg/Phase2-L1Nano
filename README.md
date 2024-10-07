@@ -3,17 +3,15 @@ NanoAOD ntupler for Phase-2 L1 Objects
 
 ## Setup
 
-This is for version `V38` that is based on the IB tag `phase2-l1t-1400pre3_v9` with these instructions:
-https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Recipe_for_phase2_l1t_1400pre3_v9
+This is for version `V43` that is based on CMSSW_14_1_0_pre7.
+For more information on the latest L1T Phase 2 software developments in CMSSW see: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Development
 
-Corresponding menu twiki section: https://twiki.cern.ch/twiki/bin/view/CMS/PhaseIIL1TriggerMenuTools#Phase_2_L1_Trigger_objects_for_2
+Corresponding menu twiki section: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PhaseIIL1TriggerMenuTools#Phase_2_L1_Trigger_objects_based
 
 ```bash
-cmsrel CMSSW_14_0_0_pre3
-cd CMSSW_14_0_0_pre3/src/
+cmsrel CMSSW_14_1_0_pre7
+cd CMSSW_14_1_0_pre7/src/
 cmsenv
-git cms-init
-git cms-checkout-topic -u cms-l1t-offline:phase2-l1t-1400pre3_v9
 
 ### ADDING NANO
 git clone git@github.com:cms-l1-dpg/Phase2-L1Nano.git PhysicsTools/L1Nano
@@ -26,7 +24,7 @@ scram b -j 8
 
 In the `test` directory there is a `cmsRun` config to rerun the L1 + **(L1 Track trigger)** + the P2GT emulator and produce the nano ntuple from these outputs.
 
-Usage: `cmsRun test/V38_rerunL1wTT_cfg.py`
+Usage: `cmsRun test/V43_rerunL1wTT_cfg.py`
 
 ### Via cmsDriver
 

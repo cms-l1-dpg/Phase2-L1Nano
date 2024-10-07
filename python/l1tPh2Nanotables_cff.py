@@ -86,7 +86,7 @@ gttTripletTable = cms.EDProducer(
 )
 
 gttEtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackerEmuEtMiss", "L1TrackerEmuEtMiss"),
     name = cms.string("L1TrackMET"),
     doc = cms.string("GTT Track MET"),
@@ -103,7 +103,7 @@ gttEtSumTable = cms.EDProducer(
 )
 
 gttHtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tTrackerEmuHTMiss", "L1TrackerEmuHTMiss"),
     name = cms.string("L1TrackHT"),
     doc = cms.string("GTT Track Missing HT"),
@@ -136,12 +136,12 @@ pvtxTable = vtxTable.clone(
 
 #### EG
 tkPhotonTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1TkEmFlatTableProducer",
     src = cms.InputTag('l1tLayer2EG','L1CtTkEm'),
     cut = cms.string("pt > 5"),
     name = cms.string("L1tkPhoton"),
     doc = cms.string("Tk Photons (EM)"),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1ObjVars,
         relIso = Var("trkIsol", float, doc = "relative Isolation based on trkIsol variable"),
@@ -156,13 +156,36 @@ tkPhotonTable = cms.EDProducer(
     )
 )
 
-tkEleTable = tkPhotonTable.clone(
+tkEleTable = cms.EDProducer(
+    "SimpleTriggerL1TkElectronFlatTableProducer", #TkElectron includes trkzVtx
     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
     name = cms.string("L1tkElectron"),
     doc = cms.string("Tk Electrons"),
+    cut = cms.string("pt > 5"),
+    # singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1ObjVars,
+        relIso = Var("trkIsol", float, doc = "relative Isolation based on trkIsol variable"),
+        # tkIso   = Var("trkIsol", float), ## use above instead to be consistent with the GT and with the tkEle
+        # tkIsoPV  = Var("trkIsolPV", float),
+        # pfIso   = Var("pfIsol", float),
+        # puppiIso  = Var("puppiIsol", float),
+        ## quality WPs, see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuidePhysicsCutParser#Suppported_operators_and_functio
+        saId   = Var("test_bit(hwQual(),0)", bool, doc = "standalone ID, bit 0 of hwQual"),
+        eleId  = Var("test_bit(hwQual(),1)", bool, doc = "electron ID, bit 1 of hwQual"),
+        phoId  = Var("test_bit(hwQual(),2)", bool, doc = "photon ID, bit 2 of hwQual"),
+        z0     = Var("trkzVtx", float, "track vertex z0"),
+        charge = Var("charge", int, doc="charge"),
+    )
 )
-tkEleTable.variables.z0     = Var("trkzVtx", float, "track vertex z0")
-tkEleTable.variables.charge = Var("charge", int, doc="charge")
+
+# tkEleTable = tkPhotonTable.clone(
+#     src = cms.InputTag('l1tLayer2EG','L1CtTkElectron'),
+#     name = cms.string("L1tkElectron"),
+#     doc = cms.string("Tk Electrons"),
+# )
+# tkEleTable.variables.z0     = Var("trkzVtx", float, "track vertex z0")
+# tkEleTable.variables.charge = Var("charge", int, doc="charge")
 ## additional variables that are not used in the menu/GT
 ## from https://github.com/p2l1pfp/FastPUPPI/blob/12_5_X/NtupleProducer/python/runPerformanceNTuple.py#L499C8-L501C83
 # tkEleTable.variables.tkEta = Var("trkPtr.eta", float,precision=8)
@@ -207,7 +230,7 @@ staEGTable = cms.EDProducer(
 )
 
 staEGebTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1EGFlatTableProducer",
     src = cms.InputTag('l1tPhase2L1CaloEGammaEmulator','GCTEGammas'),
     cut = cms.string("pt > 5"),
     name = cms.string("L1EGbarrel"),
@@ -234,12 +257,12 @@ staEGeeTable =  staEGebTable.clone(
 ### Muons
 
 staMuTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1SAMuonFlatTableProducer",
     src = cms.InputTag('l1tSAMuonsGmt','prompt'),
     name = cms.string("L1gmtMuon"),
     doc = cms.string("GMT standalone Muons, origin: GMT"),
     cut = cms.string(""),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         # l1ObjVars,
         ### WARNING : the pt/eta/phi/vz methods give rounded results -> use the "physical" accessors
@@ -273,16 +296,57 @@ staDisplacedMuTable = staMuTable.clone(
     name = cms.string("L1gmtDispMuon"),
     doc = cms.string("GMT standalone displaced Muons, origin: GMT"),
 )
-gmtTkMuTable = staMuTable.clone(
+
+gmtTkMuTable = cms.EDProducer(
+    "SimpleTriggerL1TrackerMuonFlatTableProducer",
     src = cms.InputTag('l1tTkMuonsGmt'),
     name = cms.string("L1gmtTkMuon"),
     doc = cms.string("GMT Tk Muons, origin: GMT"),
+    cut = cms.string(""),
+    # singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        # l1ObjVars,
+        ### WARNING : the pt/eta/phi/vz methods give rounded results -> use the "physical" accessors
+        # vz = Var("vz",float),
+        chargeNoPh = Var("charge", int, doc="charge id"),
+
+        ## physical values
+        charge  = Var("phCharge", int, doc="charge id"),
+        pt  = Var("phPt()",float),
+        eta = Var("phEta()",float),
+        phi = Var("phPhi()",float),
+        z0 = Var("phZ0()",float),
+        d0 = Var("phD0()",float),
+        # beta = Var("phBeta()",float), # does not exist
+
+        ## hw Values
+        hwPt = Var("hwPt()",int,doc="hardware pt"),
+        hwEta = Var("hwEta()",int,doc="hardware eta"),
+        hwPhi = Var("hwPhi()",int,doc="hardware phi"),
+        hwQual = Var("hwQual()",int,doc="hardware qual"),
+        hwIso = Var("hwIso()",int,doc="hardware iso"),
+        hwBeta = Var("hwBeta()",int,doc="hardware beta"),
+        vlooseId  = Var("test_bit(hwQual(),0)", bool, doc = "VLoose ID, bit 0 of hwQual"),
+        looseId   = Var("test_bit(hwQual(),1)", bool, doc = "Loose ID, bit 1 of hwQual"),
+        mediumId  = Var("test_bit(hwQual(),2)", bool, doc = "Medium ID, bit 2 of hwQual"),
+        tightId   = Var("test_bit(hwQual(),3)", bool, doc = "Tight ID, bit 3 of hwQual")
+
+        # ## more info
+        # nStubs = Var("stubs().size()",int,doc="number of stubs"),
+    )
 )
+
+
+# gmtTkMuTable = staMuTable.clone(
+#     src = cms.InputTag('l1tTkMuonsGmt'),
+#     name = cms.string("L1gmtTkMuon"),
+#     doc = cms.string("GMT Tk Muons, origin: GMT"),
+# )
 # gmtTkMuTable.variables.nStubs = Var("stubs().size()",int,doc="number of stubs")
-gmtTkMuTable.variables.vlooseId  = Var("test_bit(hwQual(),0)", bool, doc = "VLoose ID, bit 0 of hwQual")
-gmtTkMuTable.variables.looseId   = Var("test_bit(hwQual(),1)", bool, doc = "Loose ID, bit 1 of hwQual")
-gmtTkMuTable.variables.mediumId  = Var("test_bit(hwQual(),2)", bool, doc = "Medium ID, bit 2 of hwQual")
-gmtTkMuTable.variables.tightId   = Var("test_bit(hwQual(),3)", bool, doc = "Tight ID, bit 3 of hwQual")
+# gmtTkMuTable.variables.vlooseId  = Var("test_bit(hwQual(),0)", bool, doc = "VLoose ID, bit 0 of hwQual")
+# gmtTkMuTable.variables.looseId   = Var("test_bit(hwQual(),1)", bool, doc = "Loose ID, bit 1 of hwQual")
+# gmtTkMuTable.variables.mediumId  = Var("test_bit(hwQual(),2)", bool, doc = "Medium ID, bit 2 of hwQual")
+# gmtTkMuTable.variables.tightId   = Var("test_bit(hwQual(),3)", bool, doc = "Tight ID, bit 3 of hwQual")
 
 ### Standalone Muon from GMT, before ghost busting
 
@@ -419,12 +483,12 @@ histoSumsTable = sc4SumsTable.clone(
 
 ### Taus
 caloTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1CaloJetFlatTableProducer",
     src = cms.InputTag("l1tPhase2CaloJetEmulator","GCTJet"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1caloTau"),
     doc = cms.string("Calo Taus"),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         pt  = Var("tauEt",  float, precision=l1_float_precision_), # Define as pt in nano, as required by menu tools downstream
         phi = Var("phi", float, precision=l1_float_precision_),
@@ -434,7 +498,7 @@ caloTauTable = cms.EDProducer(
 
 
 nnCaloTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1CandidateFlatTableProducer",
     src = cms.InputTag("l1tNNCaloTauEmulator","L1NNCaloTauCollectionBXV"),
     cut = cms.string("pt > 5"),
     name = cms.string("L1nnCaloTau"),
@@ -448,12 +512,12 @@ nnCaloTauTable = cms.EDProducer(
 )
 
 nnPuppiTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleTriggerL1PFTauFlatTableProducer",
     src = cms.InputTag("l1tNNTauProducerPuppi","L1PFTausNN"),
     cut = cms.string(""),
     name = cms.string("L1nnPuppiTau"),
     doc = cms.string("NN Puppi Taus"),
-    singleton = cms.bool(False), # the number of entries is variable
+    # singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1P3Vars,
         charge = Var("charge", int),
@@ -474,8 +538,8 @@ nnPuppiTauTable = cms.EDProducer(
 )
 
 hpsTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag("l1HPSPFTauEmuProducer","HPSTaus"),
+    "SimpleTriggerL1HPSPFTauFlatTableProducer",
+    src = cms.InputTag("l1tHPSPFTauProducerPF",""),
     cut = cms.string(""),
     name = cms.string("L1hpsTau"),
     doc = cms.string("HPS Taus"),

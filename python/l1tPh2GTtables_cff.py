@@ -11,23 +11,31 @@ l1GTObjVars = cms.PSet(
 )
 
 ### P2GT Algo Block - trigger decisions
-gtAlgoTable = cms.EDProducer(
-    "P2GTAlgoBlockFlatTableProducer",
-    src = cms.InputTag('l1tGTAlgoBlockProducer'),
-    cut = cms.string(""),
-    name = cms.string("L1GT"),
-    doc = cms.string("GT Algo Block decisions"),
-    singleton = cms.bool(False), # the number of entries is variable
-    variables = cms.PSet(
-        # name = Var("algoName",string, doc = "algo name"), # does not work
-        final = Var("decisionFinal",float, doc = "final decision"),
-        initial = Var("decisionBeforeBxMaskAndPrescale",float, doc = "initial decision"),
-    )
+l1tP2GTTrigConvert = cms.EDProducer("P2GTTriggerResultsConverter",
+    src = cms.InputTag("l1tGTAlgoBlockProducer"),
+    prefix = cms.string("L1_"),     # can be anything or omitted, default: "L1_" 
+    decision = cms.string("final"), # can be "beforeBxMaskAndPrescale", "beforePrescale", "final" or omitted, default: "final"
 )
+
+# gtAlgoTable = cms.EDProducer(
+#     "P2GTAlgoBlockFlatTableProducer",
+#     src = cms.InputTag('l1tGTAlgoBlockProducer'),
+#     cut = cms.string(""),
+#     name = cms.string("L1GT"),
+#     doc = cms.string("GT Algo Block decisions"),
+#     singleton = cms.bool(False), # the number of entries is variable
+#     variables = cms.PSet(
+#         # name = Var("algoName",string, doc = "algo name"), # does not work
+#         final = Var("decisionFinal",float, doc = "final decision"),
+#         initial = Var("decisionBeforeBxMaskAndPrescale",float, doc = "initial decision"),
+#     )
+# )
+
+
 
 ### Vertex
 gtVtxTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','GTTPrimaryVert'),
     cut = cms.string(""),
     name = cms.string("L1GTVertex"),
@@ -51,7 +59,7 @@ gtPvTable = gtVtxTable.clone(
 
 ### GT
 gtTkPhoTable =cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Photons'),
     name = cms.string("L1GTtkPhoton"),
     doc = cms.string("GT tkPhotons"),
@@ -61,12 +69,12 @@ gtTkPhoTable =cms.EDProducer(
         l1GTObjVars,
         ## hw values
         # hwPt = Var("hwPT_toInt()",int,doc="hardware pt"),
-        hwQual = Var("hwQual_toInt()",int),
-        hwIso = Var("hwIso_toInt()",int),
+        hwQual = Var("hwQualityFlags_toInt()",int),
+        hwIso = Var("hwIsolationPT_toInt()",int),
         ## more physical values
         ## using the GT scales for HW to physicsal vonversion, see scales in https://github.com/cms-sw/cmssw/blob/master/L1Trigger/Phase2L1GT/python/l1tGTScales.py
-        iso = Var(f"hwIso_toInt()*{scale_parameter.isolationPT_lsb.value()}",float, doc = "absolute isolation"),
-        relIso = Var(f"hwIso_toInt()*{scale_parameter.isolationPT_lsb.value()} / pt",float, doc = "relative isolation")
+        iso = Var(f"hwIsolationPT_toInt()*{scale_parameter.isolationPT_lsb.value()}",float, doc = "absolute isolation"),
+        relIso = Var(f"hwIsolationPT_toInt()*{scale_parameter.isolationPT_lsb.value()} / pt",float, doc = "relative isolation")
     )
 )
 
@@ -91,7 +99,7 @@ gtTkMuTable = gtTkEleTable.clone(
         z0 = Var("vz",float),
         charge = Var("charge", int, doc="charge id"),
         ## hw
-        hwQual = Var("hwQual_toInt()",int),
+        hwQual = Var("hwQualityScore_toInt()",int),
         hwD0 = Var("hwD0_toInt()",int),
         hwZ0 = Var("hwZ0_toInt()",int),
         # hwBeta = Var("hwBeta_toInt()",int)
@@ -110,13 +118,42 @@ gtSaDispMuTable = gtTkMuTable.clone(
     doc = cms.string("GT GMT standalone displaced Muon"),
 )
 
-## GT seededCone puppi Jets
-gtSCJetsTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
-    src = cms.InputTag('l1tGTProducer','CL2Jets'),
+# ## GT seededCone puppi Jets
+# gtSCJetsTable = cms.EDProducer(
+#     # "SimpleCandidateFlatTableProducer",
+#     "SimpleP2GTCandidateFlatTableProducer",
+#     src = cms.InputTag('l1tGTProducer','CL2Jets'),
+#     cut = cms.string(""),
+#     name = cms.string("L1GTscJet"),
+#     doc = cms.string("GT CL2Jets: seededCone Puppi Jets"),
+#     singleton = cms.bool(False), # the number of entries is variable
+#     variables = cms.PSet(
+#         l1GTObjVars,
+#         z0 = Var("vz",float),
+#     )
+# )
+
+## GT seededCone 0.4 puppi Jets
+gtSC4JetsTable = cms.EDProducer(
+    "SimpleP2GTCandidateFlatTableProducer",
+    src = cms.InputTag('l1tGTProducer','CL2JetsSC4'),
     cut = cms.string(""),
-    name = cms.string("L1GTscJet"),
-    doc = cms.string("GT CL2Jets: seededCone Puppi Jets"),
+    name = cms.string("L1GTsc4Jet"),
+    doc = cms.string("GT CL2JetsSC4: seededCone 0.4 Puppi Jets"),
+    singleton = cms.bool(False), # the number of entries is variable
+    variables = cms.PSet(
+        l1GTObjVars,
+        z0 = Var("vz",float),
+    )
+)
+
+## GT seededCone 0.8 puppi Jets
+gtSC8JetsTable = cms.EDProducer(
+    "SimpleP2GTCandidateFlatTableProducer",
+    src = cms.InputTag('l1tGTProducer','CL2JetsSC8'),
+    cut = cms.string(""),
+    name = cms.string("L1GTsc8Jet"),
+    doc = cms.string("GT CL2JetsSC8: seededCone 0.8 Puppi Jets"),
     singleton = cms.bool(False), # the number of entries is variable
     variables = cms.PSet(
         l1GTObjVars,
@@ -125,7 +162,7 @@ gtSCJetsTable = cms.EDProducer(
 )
 
 gtNNTauTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2Taus'),
     cut = cms.string(""),
     name = cms.string("L1GTnnTau"),
@@ -139,7 +176,7 @@ gtNNTauTable = cms.EDProducer(
 )
 
 gtEtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2EtSum'),
     name = cms.string("L1GTpuppiMET"),
     doc = cms.string("GT CL2EtSum"),
@@ -151,7 +188,7 @@ gtEtSumTable = cms.EDProducer(
 )
 
 gtHtSumTable = cms.EDProducer(
-    "SimpleCandidateFlatTableProducer",
+    "SimpleP2GTCandidateFlatTableProducer",
     src = cms.InputTag('l1tGTProducer','CL2HtSum'),
     name = cms.string("L1GTscJetSum"),
     doc = cms.string("GT CL2HtSum"),
@@ -160,18 +197,20 @@ gtHtSumTable = cms.EDProducer(
         # l1GTObjVars,
         mht = Var("pt", float, doc="MHT pt"),
         mhtPhi = Var("phi", float, doc="MHT phi"),
-        ht = Var(f"hwSca_sum_toInt()*{scale_parameter.scalarSumPT_lsb.value()}", float, doc="HT"), ## HACK via hw value!
+        ht = Var(f"hwScalarSumPT_toInt()*{scale_parameter.scalarSumPT_lsb.value()}", float, doc="HT"), ## HACK via hw value!
     )
 )
 
 ## GT objects
 p2GTL1TablesTask = cms.Task(
-    gtAlgoTable,
+    l1tP2GTTrigConvert, #gtAlgoTable,
     gtTkPhoTable,
     gtTkEleTable,
     gtTkMuTable,
     gtSaMuTable, gtSaDispMuTable,
-    gtSCJetsTable,
+    # gtSCJetsTable,
+    gtSC4JetsTable,
+    gtSC8JetsTable,
     gtNNTauTable,
     gtEtSumTable,
     gtHtSumTable,
