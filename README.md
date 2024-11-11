@@ -3,14 +3,14 @@ NanoAOD ntupler for Phase-2 L1 Objects
 
 ## Setup
 
-This is for version `V43` that is based on CMSSW_14_1_0_pre7.
+This is for version `V44` that is based on CMSSW_14_2_0_pre1.
 For more information on the latest L1T Phase 2 software developments in CMSSW see: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideL1TPhase2Instructions#Development
 
 Corresponding menu twiki section: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PhaseIIL1TriggerMenuTools#Phase_2_L1_Trigger_objects_based
 
 ```bash
-cmsrel CMSSW_14_1_0_pre7
-cd CMSSW_14_1_0_pre7/src/
+cmsrel CMSSW_14_2_0_pre1
+cd CMSSW_14_2_0_pre1/src/
 cmsenv
 
 ### ADDING NANO
@@ -24,7 +24,7 @@ scram b -j 8
 
 In the `test` directory there is a `cmsRun` config to rerun the L1 + **(L1 Track trigger)** + the P2GT emulator and produce the nano ntuple from these outputs.
 
-Usage: `cmsRun test/V43_rerunL1wTT_cfg.py`
+Usage: `cmsRun test/V44_rerunL1wTT_cfg.py`
 
 ### Via cmsDriver
 
