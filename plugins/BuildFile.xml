@@ -19,6 +19,6 @@
 <use name="CommonTools/Utils"/>
 <use name="CommonTools/UtilAlgos"/>
 <use name="CommonTools/CandAlgos"/>
-<library file="*.cc" name="PhysicsToolsNanoAODL1TPlugins">
+<library file="*.cc" name="DPGAnalysisPhase2L1TNanoAOD_plugins">
   <flags EDM_PLUGIN="1"/>
 </library>

@@ -1,17 +1,19 @@
 import FWCore.ParameterSet.Config as cms
 # from PhysicsTools.NanoAOD.nano_eras_cff import *
 from PhysicsTools.NanoAOD.common_cff import *
+from PhysicsTools.NanoAOD.nano_cff import nanoMetadata
 
-l1tPh2NanoTask = cms.Task()
+l1tPh2NanoTask = cms.Task(nanoMetadata)
+l1tPh2NanoSequence = cms.Sequence(l1tPh2NanoTask)
 
 ### P2GT objects
-from PhysicsTools.L1Nano.l1tPh2GTtables_cff import *
+from DPGAnalysis.Phase2L1TNanoAOD.l1tPh2GTtables_cff import *
 def addPh2GTObjects(process):
     process.l1tPh2NanoTask.add(p2GTL1TablesTask)
     return process
 
 ### Main Ph2L1 objects
-from PhysicsTools.L1Nano.l1tPh2Nanotables_cff import *
+from DPGAnalysis.Phase2L1TNanoAOD.l1tPh2Nanotables_cff import *
 def addPh2L1Objects(process):
     process.l1tPh2NanoTask.add(p2L1TablesTask)
     return process
