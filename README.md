@@ -1,3 +1,5 @@
+#  IMPORTANT: THIS REPO IS SUPERSEEDED BY THE VERSION IN CMSSW: https://github.com/cms-sw/cmssw/tree/master/DPGAnalysis/Phase2L1TNanoAOD 
+
 # Phase2-L1Nano
 NanoAOD ntupler for Phase-2 L1 Objects
 
